@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Abstractions\" />
+    <Folder Include="Analytics\" />
+    <Folder Include="Articles\Events\" />
+    <Folder Include="Articles\ValueObjects\" />
+    <Folder Include="Comments\" />
+    <Folder Include="Comments\ValueObjects\" />
+    <Folder Include="Notifications\" />
+    <Folder Include="Notifications\ValueObjects\" />
+    <Folder Include="Publications\" />
+    <Folder Include="Publications\ValueObjects\" />
+    <Folder Include="Reactions\" />
+    <Folder Include="ReadingList\" />
+    <Folder Include="Users\ValueObjects\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MediatR.Contracts" Version="2.0.1" />
+  </ItemGroup>
+
+</Project>
