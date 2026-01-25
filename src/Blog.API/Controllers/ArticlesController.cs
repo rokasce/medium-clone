@@ -1,13 +1,13 @@
 using Blog.Application.Articles.CreateArticleDraft;
 using Blog.Application.Articles.PublishArticleCommand;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Blog.API.Controllers;
 
-[ApiController]
 [Route("api/articles")]
-public sealed class ArticlesController : ControllerBase
+public sealed class ArticlesController : ApiControllerBase
 {
     private readonly ISender _sender;
 
@@ -16,16 +16,22 @@ public sealed class ArticlesController : ControllerBase
         _sender = sender;
     }
 
+    [Authorize]
     [HttpPost("drafts")]
     [ProducesResponseType(typeof(CreateArticleResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> CreateDraft(
         [FromBody] CreateArticleDraftRequest request,
         CancellationToken cancellationToken)
     {
+        var authorId = GetCurrentUserId();
+
+        if (authorId is null) return Unauthorized();
+
         var command = new CreateArticleDraftCommand
         {
-            AuthorId = request.AuthorId,
+            AuthorId = authorId.Value,
             Title = request.Title,
             Subtitle = request.Subtitle,
             Content = request.Content
@@ -69,7 +75,6 @@ public sealed class ArticlesController : ControllerBase
 
 // DTOs
 public sealed record CreateArticleDraftRequest(
-    Guid AuthorId,
     string Title,
     string Subtitle,
     string Content);

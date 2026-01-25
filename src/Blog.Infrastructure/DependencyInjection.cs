@@ -30,10 +30,10 @@ public static class DependencyInjection
         services.AddScoped<IUserRepository, UserRepository>();
         // services.AddScoped<ITagRepository, TagRepository>();
 
-        // Register MediatR
+        // Register MediatR - scan Application assembly for handlers
         services.AddMediatR(cfg =>
         {
-            cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly);
+            cfg.RegisterServicesFromAssembly(typeof(LoggingBehavior<,>).Assembly);
 
             cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
             cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
