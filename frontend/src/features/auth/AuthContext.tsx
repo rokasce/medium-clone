@@ -1,5 +1,11 @@
-import { createContext, useContext, useEffect, useState, useRef, type ReactNode } from 'react';
-import keycloak from './keycloak';
+import {
+  createContext,
+  useEffect,
+  useState,
+  useRef,
+  type ReactNode,
+} from "react";
+import keycloak from "./keycloak";
 
 interface User {
   username: string;
@@ -17,7 +23,9 @@ interface AuthContextType {
   logout: () => void;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(
+  undefined,
+);
 
 // Track initialization state outside component to survive StrictMode remounts
 let isInitialized = false;
@@ -32,9 +40,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Only initialize once, even with StrictMode
     if (!isInitialized && !initPromise) {
       initPromise = keycloak.init({
-        onLoad: 'check-sso',
+        onLoad: "check-sso",
         silentCheckSsoRedirectUri: `${window.location.origin}/silent-check-sso.html`,
-        pkceMethod: 'S256',
+        pkceMethod: "S256",
       });
       isInitialized = true;
     }
@@ -48,13 +56,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           // Set up token refresh
           refreshIntervalRef.current = window.setInterval(() => {
             keycloak.updateToken(70).catch(() => {
-              console.log('Failed to refresh token');
+              console.log("Failed to refresh token");
             });
           }, 60000);
         }
       })
       .catch((error) => {
-        console.error('Keycloak init failed:', error);
+        console.error("Keycloak init failed:", error);
         setIsLoading(false);
       });
 
@@ -96,12 +104,4 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       {children}
     </AuthContext.Provider>
   );
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
 }

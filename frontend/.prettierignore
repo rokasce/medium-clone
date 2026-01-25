@@ -1,0 +1,24 @@
+# Dependencies
+node_modules
+
+# Build outputs
+dist
+build
+coverage
+
+# Generated files
+src/routeTree.gen.ts
+
+# Package manager files
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# IDE files
+.vscode
+.idea
