@@ -1,8 +1,16 @@
-import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  useInfiniteQuery,
+} from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
 import { ArticleApi } from '../api/article-api';
 import type { ArticleFilterParams } from '@/types';
-import type { CreateArticleInput, UpdateArticleInput } from '../schemas/article-schemas';
+import type {
+  CreateArticleInput,
+  UpdateArticleInput,
+} from '../schemas/article-schemas';
 
 // Query hooks
 
@@ -28,7 +36,10 @@ export function useMyDrafts(params?: ArticleFilterParams) {
   });
 }
 
-export function useAuthorArticles(authorId: string, params?: ArticleFilterParams) {
+export function useAuthorArticles(
+  authorId: string,
+  params?: ArticleFilterParams
+) {
   return useQuery({
     queryKey: queryKeys.articles.byAuthor(authorId),
     queryFn: () => ArticleApi.getByAuthor(authorId, params),
@@ -44,10 +55,13 @@ export function useFeed(params?: ArticleFilterParams) {
 }
 
 // Infinite query for infinite scroll
-export function useInfiniteArticles(params?: Omit<ArticleFilterParams, 'page'>) {
+export function useInfiniteArticles(
+  params?: Omit<ArticleFilterParams, 'page'>
+) {
   return useInfiniteQuery({
     queryKey: [...queryKeys.articles.list(params), 'infinite'],
-    queryFn: ({ pageParam = 1 }) => ArticleApi.getPublished({ ...params, page: pageParam }),
+    queryFn: ({ pageParam = 1 }) =>
+      ArticleApi.getPublished({ ...params, page: pageParam }),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
       if (lastPage.page < lastPage.totalPages) {
@@ -75,10 +89,14 @@ export function useUpdateArticle() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateArticleInput }) => ArticleApi.update(id, data),
+    mutationFn: ({ id, data }: { id: string; data: UpdateArticleInput }) =>
+      ArticleApi.update(id, data),
     onSuccess: (article) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.articles.all });
-      queryClient.setQueryData(queryKeys.articles.detail(article.slug), article);
+      queryClient.setQueryData(
+        queryKeys.articles.detail(article.slug),
+        article
+      );
     },
   });
 }

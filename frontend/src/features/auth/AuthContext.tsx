@@ -4,8 +4,8 @@ import {
   useState,
   useRef,
   type ReactNode,
-} from "react";
-import keycloak from "./keycloak";
+} from 'react';
+import keycloak from './keycloak';
 
 interface User {
   username: string;
@@ -24,7 +24,7 @@ interface AuthContextType {
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(
-  undefined,
+  undefined
 );
 
 // Track initialization state outside component to survive StrictMode remounts
@@ -40,9 +40,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Only initialize once, even with StrictMode
     if (!isInitialized && !initPromise) {
       initPromise = keycloak.init({
-        onLoad: "check-sso",
+        onLoad: 'check-sso',
         silentCheckSsoRedirectUri: `${window.location.origin}/silent-check-sso.html`,
-        pkceMethod: "S256",
+        pkceMethod: 'S256',
       });
       isInitialized = true;
     }
@@ -56,13 +56,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           // Set up token refresh
           refreshIntervalRef.current = window.setInterval(() => {
             keycloak.updateToken(70).catch(() => {
-              console.log("Failed to refresh token");
+              console.error('Failed to refresh token');
             });
           }, 60000);
         }
       })
       .catch((error) => {
-        console.error("Keycloak init failed:", error);
+        console.error('Keycloak init failed:', error);
         setIsLoading(false);
       });
 

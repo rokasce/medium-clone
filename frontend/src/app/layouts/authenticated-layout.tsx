@@ -26,10 +26,16 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
               Blog
             </a>
             <nav className="hidden md:flex items-center gap-4">
-              <a href="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <a
+                href="/"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
                 Home
               </a>
-              <a href="/explore" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <a
+                href="/explore"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
                 Explore
               </a>
             </nav>
@@ -40,10 +46,15 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                <Button
+                  variant="ghost"
+                  className="relative h-8 w-8 rounded-full"
+                >
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={user?.image} alt={user?.username} />
-                    <AvatarFallback>{user?.username?.[0]?.toUpperCase()}</AvatarFallback>
+                    <AvatarFallback>
+                      {user?.username?.[0]?.toUpperCase()}
+                    </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>

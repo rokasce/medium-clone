@@ -1,4 +1,8 @@
-import axios, { type AxiosInstance, type AxiosError, type InternalAxiosRequestConfig } from 'axios';
+import axios, {
+  type AxiosInstance,
+  type AxiosError,
+  type InternalAxiosRequestConfig,
+} from 'axios';
 import keycloak from '@/features/auth/keycloak';
 
 interface RefreshQueueItem {
@@ -35,7 +39,9 @@ class ApiClient {
     this.instance.interceptors.response.use(
       (response) => response,
       async (error: AxiosError) => {
-        const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+        const originalRequest = error.config as InternalAxiosRequestConfig & {
+          _retry?: boolean;
+        };
 
         if (error.response?.status === 401 && !originalRequest._retry) {
           if (this.isRefreshing) {
@@ -63,7 +69,9 @@ class ApiClient {
             return this.instance(originalRequest);
           } catch (refreshError) {
             // Token refresh failed - reject all queued requests
-            this.refreshQueue.forEach(({ reject }) => reject(refreshError as Error));
+            this.refreshQueue.forEach(({ reject }) =>
+              reject(refreshError as Error)
+            );
             this.refreshQueue = [];
             keycloak.logout();
             throw refreshError;

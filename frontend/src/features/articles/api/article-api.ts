@@ -1,10 +1,20 @@
 import { apiClient } from '@/lib/api-client';
-import type { Article, ArticleSummary, PagedResult, ArticleFilterParams } from '@/types';
-import type { CreateArticleInput, UpdateArticleInput } from '../schemas/article-schemas';
+import type {
+  Article,
+  ArticleSummary,
+  PagedResult,
+  ArticleFilterParams,
+} from '@/types';
+import type {
+  CreateArticleInput,
+  UpdateArticleInput,
+} from '../schemas/article-schemas';
 
 export const ArticleApi = {
   // Get paginated list of published articles
-  getPublished: async (params?: ArticleFilterParams): Promise<PagedResult<ArticleSummary>> => {
+  getPublished: async (
+    params?: ArticleFilterParams
+  ): Promise<PagedResult<ArticleSummary>> => {
     const response = await apiClient.get('/api/articles', { params });
     return response.data;
   },
@@ -16,19 +26,28 @@ export const ArticleApi = {
   },
 
   // Get current user's drafts
-  getMyDrafts: async (params?: ArticleFilterParams): Promise<PagedResult<ArticleSummary>> => {
+  getMyDrafts: async (
+    params?: ArticleFilterParams
+  ): Promise<PagedResult<ArticleSummary>> => {
     const response = await apiClient.get('/api/articles/drafts', { params });
     return response.data;
   },
 
   // Get articles by author
-  getByAuthor: async (authorId: string, params?: ArticleFilterParams): Promise<PagedResult<ArticleSummary>> => {
-    const response = await apiClient.get(`/api/articles/author/${authorId}`, { params });
+  getByAuthor: async (
+    authorId: string,
+    params?: ArticleFilterParams
+  ): Promise<PagedResult<ArticleSummary>> => {
+    const response = await apiClient.get(`/api/articles/author/${authorId}`, {
+      params,
+    });
     return response.data;
   },
 
   // Get feed (articles from followed authors)
-  getFeed: async (params?: ArticleFilterParams): Promise<PagedResult<ArticleSummary>> => {
+  getFeed: async (
+    params?: ArticleFilterParams
+  ): Promise<PagedResult<ArticleSummary>> => {
     const response = await apiClient.get('/api/articles/feed', { params });
     return response.data;
   },

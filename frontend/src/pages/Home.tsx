@@ -1,7 +1,13 @@
 import { useAuth } from '@/features/auth';
 import { AuthenticatedLayout, PublicLayout } from '@/app/layouts';
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from '@/components/ui/card';
 
 export default function Home() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -19,7 +25,9 @@ export default function Home() {
       <AuthenticatedLayout>
         <div className="space-y-8">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Welcome back, {user?.name || user?.username}!</h1>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Welcome back, {user?.name || user?.username}!
+            </h1>
             <p className="text-muted-foreground mt-2">
               Here's what's happening in your blog today.
             </p>
@@ -29,7 +37,9 @@ export default function Home() {
             <Card>
               <CardHeader>
                 <CardTitle>Your Drafts</CardTitle>
-                <CardDescription>Continue working on your drafts</CardDescription>
+                <CardDescription>
+                  Continue working on your drafts
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <Button variant="outline" className="w-full" asChild>

@@ -20,5 +20,11 @@ export {
 } from './hooks';
 
 // Schemas
-export { createArticleSchema, updateArticleSchema } from './schemas/article-schemas';
-export type { CreateArticleInput, UpdateArticleInput } from './schemas/article-schemas';
+export {
+  createArticleSchema,
+  updateArticleSchema,
+} from './schemas/article-schemas';
+export type {
+  CreateArticleInput,
+  UpdateArticleInput,
+} from './schemas/article-schemas';
