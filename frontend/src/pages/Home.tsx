@@ -8,6 +8,7 @@ import {
   CardDescription,
   CardContent,
 } from '@/components/ui/card';
+import { Link } from '@tanstack/react-router';
 
 export default function Home() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -55,7 +56,7 @@ export default function Home() {
               </CardHeader>
               <CardContent>
                 <Button className="w-full" asChild>
-                  <a href="/write">New Article</a>
+                  <Link to="/write">New Article</Link>
                 </Button>
               </CardContent>
             </Card>

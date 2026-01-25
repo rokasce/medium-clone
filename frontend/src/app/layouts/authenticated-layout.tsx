@@ -9,6 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Link } from '@tanstack/react-router';
 
 interface AuthenticatedLayoutProps {
   children: React.ReactNode;
@@ -19,19 +20,19 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
         <Container className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-6">
-            <a href="/" className="font-bold text-xl">
+            <Link to="/" className="font-bold text-xl">
               Blog
-            </a>
+            </Link>
             <nav className="hidden md:flex items-center gap-4">
-              <a
-                href="/"
+              <Link
+                to="/"
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 Home
-              </a>
+              </Link>
               <a
                 href="/explore"
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -42,7 +43,7 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
           </div>
           <div className="flex items-center gap-4">
             <Button variant="outline" size="sm" asChild>
-              <a href="/write">Write</a>
+              <Link to="/write">Write</Link>
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -63,7 +64,7 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
                   <div className="flex flex-col space-y-1 leading-none">
                     {user?.name && <p className="font-medium">{user.name}</p>}
                     {user?.username && (
-                      <p className="w-[200px] truncate text-sm text-muted-foreground">
+                      <p className="w-50 truncate text-sm text-muted-foreground">
                         @{user.username}
                       </p>
                     )}
