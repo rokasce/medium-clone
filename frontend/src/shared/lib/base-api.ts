@@ -84,6 +84,7 @@ export class BaseAPI {
       const response = await request();
       return response.data;
     } catch (error) {
+      console.error('API request error:', error);
       throw error;
     }
   }

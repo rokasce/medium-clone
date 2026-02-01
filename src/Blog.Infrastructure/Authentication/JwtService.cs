@@ -10,7 +10,11 @@ internal sealed class JwtService : IJwtService
 {
     private static readonly Error AuthenticationFailed = Error.Failure(
         "Keycloak.AuthenticationFailed",
-        "Failed to acquire access token do to authentication failure");
+        "Failed to acquire access token due to authentication failure");
+
+    private static readonly Error RefreshFailed = Error.Failure(
+        "Keycloak.RefreshFailed",
+        "Failed to refresh access token");
 
     private readonly HttpClient _httpClient;
     private readonly KeycloakOptions _keycloakOptions;
@@ -21,7 +25,7 @@ internal sealed class JwtService : IJwtService
         _keycloakOptions = keycloakOptions.Value;
     }
 
-    public async Task<Result<string>> GetAccessTokenAsync(
+    public async Task<Result<AuthTokenResult>> GetAccessTokenAsync(
         string email,
         string password,
         CancellationToken cancellationToken = default)
@@ -32,7 +36,7 @@ internal sealed class JwtService : IJwtService
             {
                 new("client_id", _keycloakOptions.AuthClientId),
                 new("client_secret", _keycloakOptions.AuthClientSecret),
-                new("scope", "openid email"),
+                new("scope", "openid email offline_access"),
                 new("grant_type", "password"),
                 new("username", email),
                 new("password", password)
@@ -44,18 +48,59 @@ internal sealed class JwtService : IJwtService
 
             response.EnsureSuccessStatusCode();
 
-            var authorizationToken = await response.Content.ReadFromJsonAsync<AuthorizationToken>();
+            var authorizationToken = await response.Content.ReadFromJsonAsync<AuthorizationToken>(cancellationToken);
 
             if (authorizationToken is null)
             {
-                return Result.Failure<string>(AuthenticationFailed);
+                return Result.Failure<AuthTokenResult>(AuthenticationFailed);
             }
 
-            return authorizationToken.AccessToken;
+            return new AuthTokenResult(
+                authorizationToken.AccessToken,
+                authorizationToken.RefreshToken,
+                authorizationToken.ExpiresIn);
         }
         catch (HttpRequestException)
         {
-            return Result.Failure<string>(AuthenticationFailed);
+            return Result.Failure<AuthTokenResult>(AuthenticationFailed);
+        }
+    }
+
+    public async Task<Result<AuthTokenResult>> RefreshTokenAsync(
+        string refreshToken,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var authRequestParameters = new KeyValuePair<string, string>[]
+            {
+                new("client_id", _keycloakOptions.AuthClientId),
+                new("client_secret", _keycloakOptions.AuthClientSecret),
+                new("grant_type", "refresh_token"),
+                new("refresh_token", refreshToken)
+            };
+
+            var authorizationRequestContent = new FormUrlEncodedContent(authRequestParameters);
+
+            var response = await _httpClient.PostAsync("", authorizationRequestContent, cancellationToken);
+
+            response.EnsureSuccessStatusCode();
+
+            var authorizationToken = await response.Content.ReadFromJsonAsync<AuthorizationToken>(cancellationToken);
+
+            if (authorizationToken is null)
+            {
+                return Result.Failure<AuthTokenResult>(RefreshFailed);
+            }
+
+            return new AuthTokenResult(
+                authorizationToken.AccessToken,
+                authorizationToken.RefreshToken,
+                authorizationToken.ExpiresIn);
+        }
+        catch (HttpRequestException)
+        {
+            return Result.Failure<AuthTokenResult>(RefreshFailed);
         }
     }
 }

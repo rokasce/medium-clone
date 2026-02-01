@@ -22,19 +22,23 @@ export interface User {
   isFollowing: boolean;
 }
 
+export interface AuthUser {
+  id: string;
+  email: string;
+  username: string;
+  displayName: string;
+  bio: string | null;
+  avatarUrl: string | null;
+  isVerified: boolean;
+}
+
 export interface AuthResponse {
-  success: boolean;
-  message: string;
-  user?: User;
-  accessToken?: string;
-  errors: string[];
+  accessToken: string;
+  user: AuthUser;
 }
 
 export interface RefreshTokenResponse {
-  success: boolean;
-  message: string;
-  accessToken?: string;
-  errors: string[];
+  accessToken: string;
 }
 
 export interface LoginRequest {

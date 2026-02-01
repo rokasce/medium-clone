@@ -4,8 +4,12 @@ namespace Blog.Application.Common.Authentication;
 
 public interface IJwtService
 {
-    Task<Result<string>> GetAccessTokenAsync(
+    Task<Result<AuthTokenResult>> GetAccessTokenAsync(
         string email,
         string password,
+        CancellationToken cancellationToken = default);
+
+    Task<Result<AuthTokenResult>> RefreshTokenAsync(
+        string refreshToken,
         CancellationToken cancellationToken = default);
 }

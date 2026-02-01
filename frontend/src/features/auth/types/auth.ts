@@ -1,8 +1,11 @@
-export interface User {
+export interface AuthUser {
   id: string;
   email: string;
-  userName: string;
-  createdAt: string;
+  username: string;
+  displayName: string;
+  bio: string | null;
+  avatarUrl: string | null;
+  isVerified: boolean;
 }
 
 export interface LoginData {
@@ -16,15 +19,12 @@ export interface RegisterData {
 }
 
 export interface AuthResponse {
-  success: boolean;
-  message: string;
-  errors: string[];
-  user: User;
-  token: string;
+  accessToken: string;
+  user: AuthUser;
 }
 
 export interface AuthState {
-  user: User | null;
+  user: AuthUser | null;
   isLoading: boolean;
   isAuthenticated: boolean;
 }

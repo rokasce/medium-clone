@@ -32,14 +32,10 @@ export function useAuth() {
   const loginMutation = useMutation({
     mutationFn: (data: LoginRequest) => authApi.login(data),
     onSuccess: (response) => {
-      if (response.success && response.accessToken && response.user) {
-        authApi.setAuthToken(response.accessToken);
-        queryClient.setQueryData([AUTH_QUERY_KEY], response.user);
-        toast.success('Welcome back!');
-        router.navigate({ to: '/dashboard', search: { page: 1, pageSize: 8 } });
-      } else {
-        throw new Error(response.message || 'Login failed');
-      }
+      authApi.setAuthToken(response.accessToken);
+      queryClient.setQueryData([AUTH_QUERY_KEY], response.user);
+      toast.success('Welcome back!');
+      router.navigate({ to: '/dashboard', search: { page: 1, pageSize: 8 } });
     },
     onError: (error: ApiError) => {
       toast.error(error.message || 'Login failed');
@@ -50,14 +46,10 @@ export function useAuth() {
   const registerMutation = useMutation({
     mutationFn: (data: RegisterRequest) => authApi.register(data),
     onSuccess: (response) => {
-      if (response.success && response.accessToken && response.user) {
-        authApi.setAuthToken(response.accessToken);
-        queryClient.setQueryData([AUTH_QUERY_KEY], response.user);
-        toast.success('Account created successfully!');
-        router.navigate({ to: '/dashboard', search: { page: 1, pageSize: 8 } });
-      } else {
-        throw new Error(response.message || 'Registration failed');
-      }
+      authApi.setAuthToken(response.accessToken);
+      queryClient.setQueryData([AUTH_QUERY_KEY], response.user);
+      toast.success('Account created successfully!');
+      router.navigate({ to: '/dashboard', search: { page: 1, pageSize: 8 } });
     },
     onError: (error: ApiError) => {
       toast.error(error.message || 'Registration failed');

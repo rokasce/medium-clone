@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 export const useDateFormat = () => {
   const formatDate = (
     dateString: string,
