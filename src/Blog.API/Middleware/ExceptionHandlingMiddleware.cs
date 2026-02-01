@@ -1,10 +1,9 @@
-using System.Net;
-using System.Text.Json;
+using Blog.Application.Exceptions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Blog.API.Middleware;
 
-// TODO: Add Validation error handling
-public sealed class ExceptionHandlingMiddleware
+public class ExceptionHandlingMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<ExceptionHandlingMiddleware> _logger;
@@ -25,37 +24,52 @@ public sealed class ExceptionHandlingMiddleware
         }
         catch (Exception exception)
         {
-            _logger.LogError(
-                exception,
-                "An unhandled exception occurred: {Message}",
-                exception.Message);
+            _logger.LogError(exception, "Exception occurred: {Message}", exception.Message);
 
-            await HandleExceptionAsync(context, exception);
+            var exceptionDetails = GetExceptionDetails(exception);
+
+            var problemDetails = new ProblemDetails
+            {
+                Status = exceptionDetails.Status,
+                Type = exceptionDetails.Type,
+                Title = exceptionDetails.Title,
+                Detail = exceptionDetails.Detail,
+            };
+
+            if (exceptionDetails.Errors is not null)
+            {
+                problemDetails.Extensions["errors"] = exceptionDetails.Errors;
+            }
+
+            context.Response.StatusCode = exceptionDetails.Status;
+
+            await context.Response.WriteAsJsonAsync(problemDetails);
         }
     }
 
-    private static async Task HandleExceptionAsync(
-        HttpContext context,
-        Exception exception)
+    private static ExceptionDetails GetExceptionDetails(Exception exception)
     {
-        context.Response.ContentType = "application/json";
-        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-
-        var response = new
+        return exception switch
         {
-            error = new
-            {
-                message = "An error occurred while processing your request.",
-                details = exception.Message, // Remove in production
-                type = exception.GetType().Name
-            }
+            ValidationException validationException => new ExceptionDetails(
+                StatusCodes.Status400BadRequest,
+                "ValidationFailure",
+                "Validation error",
+                "One or more validation errors has occurred",
+                validationException.Errors),
+            _ => new ExceptionDetails(
+                StatusCodes.Status500InternalServerError,
+                "ServerError",
+                "Server error",
+                "An unexpected error has occurred",
+                null)
         };
-
-        var json = JsonSerializer.Serialize(response, new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        });
-
-        await context.Response.WriteAsync(json);
     }
+
+    internal record ExceptionDetails(
+        int Status,
+        string Type,
+        string Title,
+        string Detail,
+        IEnumerable<object>? Errors);
 }

@@ -11,7 +11,10 @@
     <Folder Include="Articles\CreateArticleDraft\" />
     <Folder Include="Articles\Events\" />
     <Folder Include="Articles\PublishArticleCommand\" />
+    <Folder Include="Common\Clock\" />
     <Folder Include="Common\Interfaces\" />
+    <Folder Include="Exceptions\" />
+    <Folder Include="Users\RegisterUser\" />
   </ItemGroup>
 
   <ItemGroup>

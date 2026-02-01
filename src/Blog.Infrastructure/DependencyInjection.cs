@@ -1,10 +1,15 @@
-﻿using Blog.Application.Common.Behaviors;
+﻿using Blog.Application.Common.Authentication;
+using Blog.Application.Common.Clock;
 using Blog.Application.Common.Interfaces;
+using Blog.Infrastructure.Authentication;
+using Blog.Infrastructure.Clock;
 using Blog.Infrastructure.Persistance;
 using Blog.Infrastructure.Persistance.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Blog.Infrastructure;
 
@@ -14,32 +19,58 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        // Register DbContext
-        services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseNpgsql(
-                configuration.GetConnectionString("Database"),
-                npgsqlOptions => npgsqlOptions
-                    .MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+        services.AddTransient<IDateTimeProvider, DateTimeProvider>();
 
-        // Domain Event Dispatcher
+        AddPersistence(services, configuration);
+
+        AddAuthentication(services, configuration);
+
+        return services;
+    }
+
+    private static void AddPersistence(IServiceCollection services, IConfiguration configuration)
+    {
+        var connectionString =
+            configuration.GetConnectionString("Database") ??
+            throw new ArgumentNullException(nameof(configuration));
+
+        services.AddDbContext<ApplicationDbContext>(options =>
+            options.UseNpgsql(connectionString, npgsqlOptions => npgsqlOptions.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
 
-        // Repositories - Register specific implementations
         services.AddScoped<IArticleRepository, ArticleRepository>();
         services.AddScoped<ICommentRepository, CommentRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
-        // services.AddScoped<ITagRepository, TagRepository>();
+    }
 
-        // Register MediatR - scan Application assembly for handlers
-        services.AddMediatR(cfg =>
+    private static void AddAuthentication(IServiceCollection services, IConfiguration configuration)
+    {
+        services
+            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer();
+
+        services.Configure<AuthenticationOptions>(configuration.GetSection("Authentication"));
+
+        services.ConfigureOptions<JwtBearerOptionsSetup>();
+
+        services.Configure<KeycloakOptions>(configuration.GetSection("Keycloak"));
+
+        services.AddTransient<AdminAuthorizationDelegatingHandler>();
+
+        services.AddHttpClient<IAuthenticationService, AuthenticationService>((serviceProvider, httpClient) =>
+            {
+                var keycloakOptions = serviceProvider.GetRequiredService<IOptions<KeycloakOptions>>().Value;
+
+                httpClient.BaseAddress = new Uri(keycloakOptions.AdminUrl);
+            })
+            .AddHttpMessageHandler<AdminAuthorizationDelegatingHandler>();
+
+        services.AddHttpClient<IJwtService, JwtService>((serviceProvider, httpClient) =>
         {
-            cfg.RegisterServicesFromAssembly(typeof(LoggingBehavior<,>).Assembly);
+            var keycloakOptions = serviceProvider.GetRequiredService<IOptions<KeycloakOptions>>().Value;
 
-            cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
-            cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
-            //cfg.AddOpenBehavior(typeof(TransactionBehavior<,>));
+            httpClient.BaseAddress = new Uri(keycloakOptions.TokenUrl);
         });
-
-        return services;
     }
 }

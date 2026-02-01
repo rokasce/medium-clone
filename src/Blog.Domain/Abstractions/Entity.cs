@@ -2,9 +2,18 @@ namespace Blog.Domain.Abstractions;
 
 public abstract class Entity : IHasDomainEvents
 {
+    protected Entity(Guid id)
+    {
+        Id = id;
+    }
+
+    protected Entity()
+    {
+    }
+
     private readonly List<IDomainEvent> _domainEvents = new();
 
-    public Guid Id { get; protected set; }
+    public Guid Id { get; init; }
 
     public IReadOnlyList<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
