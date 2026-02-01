@@ -1,4 +1,3 @@
-import { useAuth } from '@/features/auth';
 import { Container } from './container';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -10,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Link } from '@tanstack/react-router';
+import { useAuth } from '@/features/auth/hooks';
 
 interface AuthenticatedLayoutProps {
   children: React.ReactNode;
@@ -52,9 +52,9 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
                   className="relative h-8 w-8 rounded-full"
                 >
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={user?.image} alt={user?.username} />
+                    <AvatarImage src={user?.image} alt={user?.userName} />
                     <AvatarFallback>
-                      {user?.username?.[0]?.toUpperCase()}
+                      {user?.userName?.[0]?.toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
@@ -62,17 +62,16 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
               <DropdownMenuContent className="w-56" align="end" forceMount>
                 <div className="flex items-center justify-start gap-2 p-2">
                   <div className="flex flex-col space-y-1 leading-none">
-                    {user?.name && <p className="font-medium">{user.name}</p>}
-                    {user?.username && (
+                    {user?.userName && (
                       <p className="w-50 truncate text-sm text-muted-foreground">
-                        @{user.username}
+                        @{user.userName}
                       </p>
                     )}
                   </div>
                 </div>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <a href={`/@${user?.username}`}>Profile</a>
+                  <a href={`/@${user?.userName}`}>Profile</a>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <a href="/dashboard">Dashboard</a>

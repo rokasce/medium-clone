@@ -1,4 +1,4 @@
-import { useAuth } from '@/features/auth';
+import { Link } from '@tanstack/react-router';
 import { Container } from './container';
 import { Button } from '@/components/ui/button';
 
@@ -7,11 +7,9 @@ interface PublicLayoutProps {
 }
 
 export function PublicLayout({ children }: PublicLayoutProps) {
-  const { login } = useAuth();
-
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
         <Container className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-6">
             <a href="/" className="font-bold text-xl">
@@ -33,10 +31,14 @@ export function PublicLayout({ children }: PublicLayoutProps) {
             </nav>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" onClick={login}>
-              Sign in
+            <Button variant="ghost" asChild>
+              <Link
+                to="/register"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Sign in
+              </Link>
             </Button>
-            <Button onClick={login}>Get started</Button>
           </div>
         </Container>
       </header>

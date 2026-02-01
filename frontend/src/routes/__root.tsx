@@ -1,4 +1,4 @@
-import { AuthProvider } from '@/features/auth';
+import { AuthProvider } from '@/features';
 import { createRootRoute, Outlet } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 

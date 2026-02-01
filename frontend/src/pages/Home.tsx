@@ -1,4 +1,3 @@
-import { useAuth } from '@/features/auth';
 import { AuthenticatedLayout, PublicLayout } from '@/app/layouts';
 import { Button } from '@/components/ui/button';
 import {
@@ -8,6 +7,7 @@ import {
   CardDescription,
   CardContent,
 } from '@/components/ui/card';
+import { useAuth } from '@/features/auth/hooks';
 import { Link } from '@tanstack/react-router';
 
 export default function Home() {
@@ -27,7 +27,7 @@ export default function Home() {
         <div className="space-y-8">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">
-              Welcome back, {user?.name || user?.username}!
+              Welcome back, {user?.userName}!
             </h1>
             <p className="text-muted-foreground mt-2">
               Here's what's happening in your blog today.
