@@ -91,7 +91,7 @@ export interface ArticleSummary {
 export interface CreateArticleRequest {
   title: string;
   content: string;
-  description: string;
+  subtitle?: string;
   isPublished?: boolean;
   tags: string[];
 }
@@ -99,7 +99,7 @@ export interface CreateArticleRequest {
 export interface UpdateArticleRequest {
   title?: string;
   content?: string;
-  description?: string;
+  subtitle?: string;
   isPublished?: boolean;
   tags: string[];
 }

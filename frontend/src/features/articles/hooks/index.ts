@@ -72,7 +72,6 @@ export function useInfiniteArticles(
 }
 
 // Mutation hooks
-
 export function useCreateArticle() {
   const queryClient = useQueryClient();
 
