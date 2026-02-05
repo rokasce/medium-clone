@@ -11,4 +11,8 @@ public static class UserErrors
     public static Error InvalidCredentials = Error.Failure(
         "User.InvalidCredentials",
         "The provided credentials were invalid");
+
+    public static Error AlreadyAuthor = Error.Failure(
+        "User.AlreadyAuthor",
+        "The user is already an author");
 }

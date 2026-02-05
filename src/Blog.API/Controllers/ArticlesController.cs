@@ -25,13 +25,13 @@ public sealed class ArticlesController : ApiControllerBase
         [FromBody] CreateArticleDraftRequest request,
         CancellationToken cancellationToken)
     {
-        var authorId = GetCurrentUserId();
+        var identityId = GetCurrentIdentityId();
 
-        if (authorId is null) return Unauthorized();
+        if (identityId is null) return Unauthorized();
 
         var command = new CreateArticleDraftCommand
         {
-            AuthorId = authorId.Value,
+            IdentityId = identityId,
             Title = request.Title,
             Subtitle = request.Subtitle,
             Content = request.Content

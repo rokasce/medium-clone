@@ -49,8 +49,7 @@ public abstract class Repository<T> : IRepository<T> where T : Entity
         Guid id,
         CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
-        // return await DbSet.AnyAsync(e => e.Id == id, cancellationToken);
+        return await DbSet.AnyAsync(e => e.Id == id, cancellationToken);
     }
 
     public virtual async Task<int> SaveChangesAsync(

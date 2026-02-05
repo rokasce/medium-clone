@@ -1,99 +1,127 @@
-import { apiClient } from '@/lib/api-client';
+import { BaseAPI } from '@/shared/lib/base-api';
 import type {
   Article,
   ArticleSummary,
+  CreateArticleRequest,
   PagedResult,
-  ArticleFilterParams,
-} from '@/types';
-import type {
-  CreateArticleInput,
-  UpdateArticleInput,
-} from '../schemas/article-schemas';
+  UpdateArticleRequest,
+} from '@/shared/types/api';
 
-export const ArticleApi = {
+export class ArticleAPI extends BaseAPI {
   // Get paginated list of published articles
-  getPublished: async (
-    params?: ArticleFilterParams
-  ): Promise<PagedResult<ArticleSummary>> => {
-    const response = await apiClient.get('/api/articles', { params });
-    return response.data;
-  },
+  async getPublished(params?: {
+    page?: number;
+    pageSize?: number;
+    authorId?: string;
+    searchTerm?: string;
+    tags?: string[];
+  }): Promise<PagedResult<ArticleSummary>> {
+    return this.handleRequest(() =>
+      this.axiosInstance.get<PagedResult<ArticleSummary>>('/articles', {
+        params,
+      })
+    );
+  }
 
   // Get single article by slug
-  getBySlug: async (slug: string): Promise<Article> => {
-    const response = await apiClient.get(`/api/articles/${slug}`);
-    return response.data;
-  },
+  async getBySlug(slug: string): Promise<Article> {
+    return this.handleRequest(() =>
+      this.axiosInstance.get<Article>(`/articles/${slug}`)
+    );
+  }
 
   // Get current user's drafts
-  getMyDrafts: async (
-    params?: ArticleFilterParams
-  ): Promise<PagedResult<ArticleSummary>> => {
-    const response = await apiClient.get('/api/articles/drafts', { params });
-    return response.data;
-  },
+  async getMyDrafts(params?: {
+    page?: number;
+    pageSize?: number;
+  }): Promise<PagedResult<ArticleSummary>> {
+    return this.handleRequest(() =>
+      this.axiosInstance.get<PagedResult<ArticleSummary>>('/articles/drafts', {
+        params,
+      })
+    );
+  }
 
   // Get articles by author
-  getByAuthor: async (
+  async getByAuthor(
     authorId: string,
-    params?: ArticleFilterParams
-  ): Promise<PagedResult<ArticleSummary>> => {
-    const response = await apiClient.get(`/api/articles/author/${authorId}`, {
-      params,
-    });
-    return response.data;
-  },
+    params?: { page?: number; pageSize?: number }
+  ): Promise<PagedResult<ArticleSummary>> {
+    return this.handleRequest(() =>
+      this.axiosInstance.get<PagedResult<ArticleSummary>>(
+        `/articles/author/${authorId}`,
+        { params }
+      )
+    );
+  }
 
   // Get feed (articles from followed authors)
-  getFeed: async (
-    params?: ArticleFilterParams
-  ): Promise<PagedResult<ArticleSummary>> => {
-    const response = await apiClient.get('/api/articles/feed', { params });
-    return response.data;
-  },
+  async getFeed(params?: {
+    page?: number;
+    pageSize?: number;
+  }): Promise<PagedResult<ArticleSummary>> {
+    return this.handleRequest(() =>
+      this.axiosInstance.get<PagedResult<ArticleSummary>>('/articles/feed', {
+        params,
+      })
+    );
+  }
 
   // Create a new draft
-  createDraft: async (data: CreateArticleInput): Promise<Article> => {
-    const response = await apiClient.post('/api/articles/drafts', data);
-    return response.data;
-  },
+  async createDraft(data: CreateArticleRequest): Promise<Article> {
+    return this.handleRequest(() =>
+      this.axiosInstance.post<Article>('/articles/drafts', data)
+    );
+  }
 
   // Update an article
-  update: async (id: string, data: UpdateArticleInput): Promise<Article> => {
-    const response = await apiClient.put(`/api/articles/${id}`, data);
-    return response.data;
-  },
+  async update(id: string, data: UpdateArticleRequest): Promise<Article> {
+    return this.handleRequest(() =>
+      this.axiosInstance.put<Article>(`/articles/${id}`, data)
+    );
+  }
 
   // Publish an article
-  publish: async (id: string): Promise<Article> => {
-    const response = await apiClient.post(`/api/articles/${id}/publish`);
-    return response.data;
-  },
+  async publish(id: string): Promise<Article> {
+    return this.handleRequest(() =>
+      this.axiosInstance.post<Article>(`/articles/${id}/publish`)
+    );
+  }
 
   // Unpublish an article
-  unpublish: async (id: string): Promise<Article> => {
-    const response = await apiClient.post(`/api/articles/${id}/unpublish`);
-    return response.data;
-  },
+  async unpublish(id: string): Promise<Article> {
+    return this.handleRequest(() =>
+      this.axiosInstance.post<Article>(`/articles/${id}/unpublish`)
+    );
+  }
 
   // Delete an article
-  delete: async (id: string): Promise<void> => {
-    await apiClient.delete(`/api/articles/${id}`);
-  },
+  async delete(id: string): Promise<void> {
+    return this.handleRequest(() =>
+      this.axiosInstance.delete<void>(`/articles/${id}`)
+    );
+  }
 
   // Clap for an article
-  clap: async (id: string): Promise<{ clapsCount: number }> => {
-    const response = await apiClient.post(`/api/articles/${id}/clap`);
-    return response.data;
-  },
+  async clap(id: string): Promise<{ clapsCount: number }> {
+    return this.handleRequest(() =>
+      this.axiosInstance.post<{ clapsCount: number }>(`/articles/${id}/clap`)
+    );
+  }
 
   // Bookmark an article
-  bookmark: async (id: string): Promise<void> => {
-    await apiClient.post(`/api/articles/${id}/bookmark`);
-  },
+  async bookmark(id: string): Promise<void> {
+    return this.handleRequest(() =>
+      this.axiosInstance.post<void>(`/articles/${id}/bookmark`)
+    );
+  }
 
   // Remove bookmark
-  removeBookmark: async (id: string): Promise<void> => {
-    await apiClient.delete(`/api/articles/${id}/bookmark`);
-  },
-};
+  async removeBookmark(id: string): Promise<void> {
+    return this.handleRequest(() =>
+      this.axiosInstance.delete<void>(`/articles/${id}/bookmark`)
+    );
+  }
+}
+
+export const articleApi = new ArticleAPI();

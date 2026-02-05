@@ -5,26 +5,25 @@ import {
   useInfiniteQuery,
 } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
-import { ArticleApi } from '../api/article-api';
 import type { ArticleFilterParams } from '@/types';
 import type {
   CreateArticleInput,
   UpdateArticleInput,
 } from '../schemas/article-schemas';
+import { articleApi } from '../../articles/api/article-api';
 
 // Query hooks
-
 export function useArticles(params?: ArticleFilterParams) {
   return useQuery({
     queryKey: queryKeys.articles.list(params),
-    queryFn: () => ArticleApi.getPublished(params),
+    queryFn: () => articleApi.getPublished(params),
   });
 }
 
 export function useArticle(slug: string) {
   return useQuery({
     queryKey: queryKeys.articles.detail(slug),
-    queryFn: () => ArticleApi.getBySlug(slug),
+    queryFn: () => articleApi.getBySlug(slug),
     enabled: !!slug,
   });
 }
@@ -32,7 +31,7 @@ export function useArticle(slug: string) {
 export function useMyDrafts(params?: ArticleFilterParams) {
   return useQuery({
     queryKey: queryKeys.articles.drafts(params),
-    queryFn: () => ArticleApi.getMyDrafts(params),
+    queryFn: () => articleApi.getMyDrafts(params),
   });
 }
 
@@ -42,7 +41,7 @@ export function useAuthorArticles(
 ) {
   return useQuery({
     queryKey: queryKeys.articles.byAuthor(authorId),
-    queryFn: () => ArticleApi.getByAuthor(authorId, params),
+    queryFn: () => articleApi.getByAuthor(authorId, params),
     enabled: !!authorId,
   });
 }
@@ -50,7 +49,7 @@ export function useAuthorArticles(
 export function useFeed(params?: ArticleFilterParams) {
   return useQuery({
     queryKey: queryKeys.articles.feed(params),
-    queryFn: () => ArticleApi.getFeed(params),
+    queryFn: () => articleApi.getFeed(params),
   });
 }
 
@@ -61,7 +60,7 @@ export function useInfiniteArticles(
   return useInfiniteQuery({
     queryKey: [...queryKeys.articles.list(params), 'infinite'],
     queryFn: ({ pageParam = 1 }) =>
-      ArticleApi.getPublished({ ...params, page: pageParam }),
+      articleApi.getPublished({ ...params, page: pageParam }),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
       if (lastPage.page < lastPage.totalPages) {
@@ -78,7 +77,7 @@ export function useCreateArticle() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: CreateArticleInput) => ArticleApi.createDraft(data),
+    mutationFn: (data: CreateArticleInput) => articleApi.createDraft(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.articles.all });
     },
@@ -90,7 +89,7 @@ export function useUpdateArticle() {
 
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateArticleInput }) =>
-      ArticleApi.update(id, data),
+      articleApi.update(id, data),
     onSuccess: (article) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.articles.all });
       queryClient.setQueryData(
@@ -105,7 +104,7 @@ export function usePublishArticle() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => ArticleApi.publish(id),
+    mutationFn: (id: string) => articleApi.publish(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.articles.all });
     },
@@ -116,7 +115,7 @@ export function useUnpublishArticle() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => ArticleApi.unpublish(id),
+    mutationFn: (id: string) => articleApi.unpublish(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.articles.all });
     },
@@ -127,7 +126,7 @@ export function useDeleteArticle() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => ArticleApi.delete(id),
+    mutationFn: (id: string) => articleApi.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.articles.all });
     },
@@ -138,7 +137,7 @@ export function useClapArticle() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => ArticleApi.clap(id),
+    mutationFn: (id: string) => articleApi.clap(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.articles.all });
     },
@@ -149,7 +148,7 @@ export function useBookmarkArticle() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => ArticleApi.bookmark(id),
+    mutationFn: (id: string) => articleApi.bookmark(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.articles.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.bookmarks.all });
@@ -161,7 +160,7 @@ export function useRemoveBookmark() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => ArticleApi.removeBookmark(id),
+    mutationFn: (id: string) => articleApi.removeBookmark(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.articles.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.bookmarks.all });

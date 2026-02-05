@@ -35,7 +35,7 @@ export function useAuth() {
       authApi.setAuthToken(response.accessToken);
       queryClient.setQueryData([AUTH_QUERY_KEY], response.user);
       toast.success('Welcome back!');
-      router.navigate({ to: '/dashboard', search: { page: 1, pageSize: 8 } });
+      router.navigate({ to: '/' });
     },
     onError: (error: ApiError) => {
       toast.error(error.message || 'Login failed');
@@ -49,7 +49,7 @@ export function useAuth() {
       authApi.setAuthToken(response.accessToken);
       queryClient.setQueryData([AUTH_QUERY_KEY], response.user);
       toast.success('Account created successfully!');
-      router.navigate({ to: '/dashboard', search: { page: 1, pageSize: 8 } });
+      router.navigate({ to: '/' });
     },
     onError: (error: ApiError) => {
       toast.error(error.message || 'Registration failed');

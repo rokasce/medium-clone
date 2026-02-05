@@ -40,6 +40,7 @@ public static class DependencyInjection
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
 
         services.AddScoped<IArticleRepository, ArticleRepository>();
+        services.AddScoped<IAuthorRepository, AuthorRepository>();
         services.AddScoped<ICommentRepository, CommentRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
     }

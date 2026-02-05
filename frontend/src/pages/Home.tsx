@@ -21,17 +21,29 @@ export default function Home() {
     );
   }
 
+  console.log('User data:', user);
+
   if (isAuthenticated) {
     return (
       <AuthenticatedLayout>
         <div className="space-y-8">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              Welcome back, {user?.userName}!
-            </h1>
-            <p className="text-muted-foreground mt-2">
-              Here's what's happening in your blog today.
-            </p>
+          <div className="flex items-center gap-4">
+            {user?.image && (
+              <img
+                src={user.image}
+                alt={user.userName}
+                className="h-16 w-16 rounded-full object-cover"
+              />
+            )}
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">
+                Welcome back, {user?.userName}!
+              </h1>
+              <p className="text-muted-foreground mt-1">
+                {user?.email}
+                {user?.bio && <span className="block text-sm">{user.bio}</span>}
+              </p>
+            </div>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

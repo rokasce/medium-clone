@@ -26,6 +26,14 @@ public sealed class UserRepository : Repository<User>, IUserRepository
             .FirstOrDefaultAsync(u => u.Username == username, cancellationToken);
     }
 
+    public async Task<User?> GetByIdentityIdAsync(
+        string identityId,
+        CancellationToken cancellationToken)
+    {
+        return await DbSet
+            .FirstOrDefaultAsync(u => u.IdentityId == identityId, cancellationToken);
+    }
+
     public async Task<bool> EmailExistsAsync(
         string email,
         CancellationToken cancellationToken)

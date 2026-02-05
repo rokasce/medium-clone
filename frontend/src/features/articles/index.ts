@@ -1,7 +1,3 @@
-// API
-export { ArticleApi } from './api/article-api';
-
-// Hooks
 export {
   useArticles,
   useArticle,

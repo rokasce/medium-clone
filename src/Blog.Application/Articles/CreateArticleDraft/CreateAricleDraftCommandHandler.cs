@@ -1,6 +1,7 @@
 using Blog.Application.Common.Interfaces;
 using Blog.Domain.Abstractions;
 using Blog.Domain.Articles;
+using Blog.Domain.Users;
 using MediatR;
 
 namespace Blog.Application.Articles.CreateArticleDraft;
@@ -8,28 +9,53 @@ namespace Blog.Application.Articles.CreateArticleDraft;
 public sealed class CreateArticleDraftCommandHandler
     : IRequestHandler<CreateArticleDraftCommand, Result<Guid>>
 {
-    private readonly IArticleRepository _repository;
+    private readonly IArticleRepository _articleRepository;
+    private readonly IAuthorRepository _authorRepository;
+    private readonly IUserRepository _userRepository;
 
-    public CreateArticleDraftCommandHandler(IArticleRepository repository)
+    public CreateArticleDraftCommandHandler(
+        IArticleRepository articleRepository,
+        IAuthorRepository authorRepository,
+        IUserRepository userRepository)
     {
-        _repository = repository;
+        _articleRepository = articleRepository;
+        _authorRepository = authorRepository;
+        _userRepository = userRepository;
     }
 
     public async Task<Result<Guid>> Handle(
         CreateArticleDraftCommand request,
         CancellationToken cancellationToken)
     {
+        // Look up user by IdentityId (from Keycloak)
+        var user = await _userRepository.GetByIdentityIdAsync(request.IdentityId, cancellationToken);
+
+        if (user is null)
+        {
+            return Result.Failure<Guid>(UserErrors.NotFound);
+        }
+
+        // Get or create author for the user
+        var author = await _authorRepository.GetByUserIdAsync(user.Id, cancellationToken);
+
+        if (author is null)
+        {
+            // Auto-promote user to author on first article creation
+            author = Author.Create(user.Id);
+            await _authorRepository.AddAsync(author, cancellationToken);
+        }
+
         var slug = GenerateSlug(request.Title);
 
         var article = Article.CreateDraft(
-            request.AuthorId,
+            author.Id,
             request.Title,
             slug,
             request.Subtitle,
             request.Content);
 
-        await _repository.AddAsync(article, cancellationToken);
-        await _repository.SaveChangesAsync(cancellationToken);
+        await _articleRepository.AddAsync(article, cancellationToken);
+        await _articleRepository.SaveChangesAsync(cancellationToken);
 
         return Result.Success(article.Id);
     }

@@ -8,9 +8,9 @@ public sealed class CreateArticleDraftCommandValidator
 {
     public CreateArticleDraftCommandValidator()
     {
-        RuleFor(x => x.AuthorId)
+        RuleFor(x => x.UserId)
             .NotEmpty()
-            .WithMessage("Author ID is required");
+            .WithMessage("User ID is required");
 
         RuleFor(x => x.Title)
             .NotEmpty()

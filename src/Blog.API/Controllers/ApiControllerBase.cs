@@ -6,14 +6,11 @@ namespace Blog.API.Controllers;
 [ApiController]
 public abstract class ApiControllerBase : ControllerBase
 {
-    protected Guid? GetCurrentUserId()
+    protected string? GetCurrentIdentityId()
     {
-        var userId = User.FindFirstValue("sub")
+        var identityId = User.FindFirstValue("sub")
             ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        if (string.IsNullOrEmpty(userId) || !Guid.TryParse(userId, out var parsedId))
-            return null;
-
-        return parsedId;
+        return string.IsNullOrEmpty(identityId) ? null : identityId;
     }
 }
