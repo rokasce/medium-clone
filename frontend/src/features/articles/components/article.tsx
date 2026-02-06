@@ -29,7 +29,7 @@ export function Article({ slug }: { slug: string }) {
     .slice(0, 3);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       <article className="max-w-3xl mx-auto px-4 py-12">
         {/* Article header */}
         <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
@@ -56,7 +56,7 @@ export function Article({ slug }: { slug: string }) {
               <Link to="/profile" className="font-semibold hover:underline">
                 {article.author.name}
               </Link>
-              <div className="text-sm text-zinc-600">
+              <div className="text-sm text-muted-foreground">
                 {article.readTime} min read · {article.publishedAt}
               </div>
             </div>
@@ -124,7 +124,7 @@ export function Article({ slug }: { slug: string }) {
         <Separator className="my-8" />
 
         {/* Author card */}
-        <div className="flex items-start gap-4 p-6 bg-zinc-50 rounded-lg mb-12">
+        <div className="flex items-start gap-4 p-6 bg-muted rounded-lg mb-12">
           <Link to="/profile">
             <Avatar className="h-16 w-16">
               <AvatarImage
@@ -146,7 +146,7 @@ export function Article({ slug }: { slug: string }) {
             >
               {article.author.name}
             </Link>
-            <p className="text-zinc-600 mt-2">{article.author.bio}</p>
+            <p className="text-muted-foreground mt-2">{article.author.bio}</p>
             <Button variant="outline" size="sm" className="mt-4">
               Follow
             </Button>
@@ -186,10 +186,10 @@ export function Article({ slug }: { slug: string }) {
                       <h3 className="font-semibold mb-1 group-hover:underline">
                         {relatedArticle.title}
                       </h3>
-                      <p className="text-sm text-zinc-600 line-clamp-2">
+                      <p className="text-sm text-muted-foreground line-clamp-2">
                         {relatedArticle.excerpt}
                       </p>
-                      <div className="text-xs text-zinc-500 mt-2">
+                      <div className="text-xs text-muted-foreground mt-2">
                         {relatedArticle.readTime} min read
                       </div>
                     </div>

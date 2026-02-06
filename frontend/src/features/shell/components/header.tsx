@@ -26,19 +26,19 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-white dark:bg-zinc-950 dark:border-zinc-800">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-8">
-          <Link to="/" className="text-2xl font-serif dark:text-white">
+          <Link to="/" className="text-2xl font-serif text-foreground">
             Medium
           </Link>
 
           <div className="hidden md:flex relative w-64">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400 dark:text-zinc-500" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               type="search"
               placeholder="Search"
-              className="pl-10 bg-zinc-50 border-zinc-200 dark:bg-zinc-900 dark:border-zinc-800"
+              className="pl-10 bg-input-background border-border"
             />
           </div>
         </div>

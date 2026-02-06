@@ -10,7 +10,7 @@ export function Profile() {
   const { user: currentUser } = useAuth();
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       <div className="max-w-5xl mx-auto px-4 py-12">
         {/* Profile header */}
         <div className="mb-12">
@@ -32,10 +32,10 @@ export function Profile() {
                 <h1 className="text-3xl font-bold mb-2">
                   {currentUser?.userName}
                 </h1>
-                <p className="text-zinc-600 mb-4 max-w-xl">
+                <p className="text-muted-foreground mb-4 max-w-xl">
                   {currentUser?.bio}
                 </p>
-                <div className="flex items-center gap-6 text-sm text-zinc-600">
+                <div className="flex items-center gap-6 text-sm text-muted-foreground">
                   <span>{currentUser?.followersCount} Followers</span>
                   <span>{currentUser?.followingCount} Following</span>
                 </div>
@@ -48,14 +48,14 @@ export function Profile() {
         <Separator className="mb-8" />
 
         {/* Navigation tabs */}
-        <div className="flex gap-8 mb-8 border-b border-zinc-200">
-          <button className="pb-3 border-b-2 border-zinc-900 font-semibold">
+        <div className="flex gap-8 mb-8 border-b border-border">
+          <button className="pb-3 border-b-2 border-foreground font-semibold">
             Home
           </button>
-          <button className="pb-3 text-zinc-600 hover:text-zinc-900">
+          <button className="pb-3 text-muted-foreground hover:text-foreground">
             Lists
           </button>
-          <button className="pb-3 text-zinc-600 hover:text-zinc-900">
+          <button className="pb-3 text-muted-foreground hover:text-foreground">
             About
           </button>
         </div>
@@ -65,7 +65,7 @@ export function Profile() {
           {userArticles.map((article) => (
             <article
               key={article.slug}
-              className="border-b border-zinc-200 pb-8"
+              className="border-b border-border pb-8"
             >
               <Link to={`/articles/${article.slug}`} className="block group">
                 <div className="flex gap-6">
@@ -74,11 +74,11 @@ export function Profile() {
                       {article.title}
                     </h2>
 
-                    <p className="text-zinc-600 mb-4 line-clamp-2">
+                    <p className="text-muted-foreground mb-4 line-clamp-2">
                       {article.excerpt}
                     </p>
 
-                    <div className="flex items-center gap-4 text-sm text-zinc-500">
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <span>{article.publishedAt}</span>
                       <span>·</span>
                       <span>{article.readTime} min read</span>
@@ -105,7 +105,7 @@ export function Profile() {
         {/* Empty state for no articles */}
         {userArticles.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-zinc-600 mb-4">
+            <p className="text-muted-foreground mb-4">
               You haven't published any stories yet.
             </p>
             <Link to="/write">

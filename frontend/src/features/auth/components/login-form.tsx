@@ -42,7 +42,7 @@ export function LoginForm() {
 
   return (
     <div className="w-full max-w-md mx-auto">
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="bg-card rounded-lg shadow-md p-6">
         <h2 className="text-2xl font-bold text-center mb-6">Sign In</h2>
 
         <Form {...form}>
@@ -83,6 +83,15 @@ export function LoginForm() {
               )}
             />
 
+            <div className="text-right">
+              <Link
+                to="/forgot-password"
+                className="text-sm text-blue-600 hover:underline"
+              >
+                Forgot password?
+              </Link>
+            </div>
+
             <Button
               type="submit"
               className="w-full"
@@ -94,7 +103,7 @@ export function LoginForm() {
         </Form>
 
         <div className="mt-4 text-center">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-muted-foreground">
             Don't have an account?{' '}
             <Link to="/signup" className="text-blue-600 hover:underline">
               Create one here

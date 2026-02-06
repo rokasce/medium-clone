@@ -43,13 +43,13 @@ export default function Home() {
           {user?.image && (
             <img
               src={user.image}
-              alt={user.userName}
+              alt={user.username}
               className="h-16 w-16 rounded-full object-cover"
             />
           )}
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              Welcome back, {user?.userName}!
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">
+              Welcome back, {user?.username}!
             </h1>
             <p className="text-muted-foreground mt-1">
               {user?.email}
@@ -108,9 +108,13 @@ export default function Home() {
             {mockArticles.map((article) => (
               <article
                 key={article.slug}
-                className="border-b border-zinc-200 pb-8"
+                className="border-b border-border pb-8"
               >
-                <Link to={`/articles/${article.slug}`} className="block group">
+                <Link
+                  to="/articles/$slug"
+                  params={{ slug: article.slug }}
+                  className="block group"
+                >
                   <div className="flex gap-6">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-3">
@@ -126,19 +130,21 @@ export default function Home() {
                               .join('')}
                           </AvatarFallback>
                         </Avatar>
-                        <span className="text-sm">{article.author.name}</span>
+                        <span className="text-sm text-foreground">
+                          {article.author.name}
+                        </span>
                       </div>
 
-                      <h2 className="text-xl font-bold mb-2 group-hover:underline line-clamp-2">
+                      <h2 className="text-xl font-bold mb-2 group-hover:underline line-clamp-2 text-foreground">
                         {article.title}
                       </h2>
 
-                      <p className="text-zinc-600 mb-4 line-clamp-2">
+                      <p className="text-muted-foreground mb-4 line-clamp-2">
                         {article.excerpt}
                       </p>
 
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4 text-sm text-zinc-500">
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
                           <span>{article.publishedAt}</span>
                           <span>·</span>
                           <span>{article.readTime} min read</span>
@@ -146,7 +152,7 @@ export default function Home() {
                           <span>{article.claps} claps</span>
                         </div>
 
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
                           <Bookmark className="h-4 w-4" />
                         </Button>
                       </div>
@@ -172,16 +178,19 @@ export default function Home() {
         <aside className="hidden lg:block lg:col-span-4">
           <div className="sticky top-20">
             <div className="mb-6">
-              <h3 className="font-semibold mb-4">Trending on Medium</h3>
+              <h3 className="font-semibold mb-4 text-foreground">
+                Trending on Medium
+              </h3>
               <div className="space-y-4">
                 {mockArticles.slice(0, 3).map((article, index) => (
                   <Link
                     key={article.slug}
-                    to={`/articles/${article.slug}`}
+                    to="/articles/$slug"
+                    params={{ slug: article.slug }}
                     className="block group"
                   >
                     <div className="flex gap-4">
-                      <span className="text-3xl text-zinc-200 font-serif">
+                      <span className="text-3xl text-muted-foreground font-serif">
                         0{index + 1}
                       </span>
                       <div className="flex-1">
@@ -198,9 +207,11 @@ export default function Home() {
                                 .join('')}
                             </AvatarFallback>
                           </Avatar>
-                          <span className="text-xs">{article.author.name}</span>
+                          <span className="text-xs text-foreground">
+                            {article.author.name}
+                          </span>
                         </div>
-                        <h4 className="font-semibold text-sm line-clamp-2 group-hover:underline">
+                        <h4 className="font-semibold text-sm line-clamp-2 group-hover:underline text-foreground">
                           {article.title}
                         </h4>
                       </div>
@@ -213,7 +224,7 @@ export default function Home() {
             <Separator className="my-6" />
 
             <div>
-              <h3 className="font-semibold mb-4">
+              <h3 className="font-semibold mb-4 text-foreground">
                 Discover more of what matters to you
               </h3>
               <div className="flex flex-wrap gap-2">
