@@ -24,3 +24,5 @@ export type {
   CreateArticleInput,
   UpdateArticleInput,
 } from './schemas/article-schemas';
+
+export { default as WritePage } from './pages/write-page';

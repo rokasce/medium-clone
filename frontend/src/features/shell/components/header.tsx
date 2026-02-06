@@ -1,4 +1,6 @@
-import { useAuth } from '@/features';
+import { Search, PenSquare } from 'lucide-react';
+import { useAuth } from '@/features/auth/hooks';
+import { Input } from '@/components/ui/input';
 import {
   Avatar,
   AvatarFallback,
@@ -9,14 +11,14 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  Input,
-} from '@/shared';
-import { Link, useRouter } from '@tanstack/react-router';
-import { Bell, PenSquare, Search } from 'lucide-react';
+} from '@/shared/components/ui';
+import { ThemeToggle } from './theme-toggle';
+import { Notifications } from '@/features/notifications';
+import { Link, useNavigate } from '@tanstack/react-router';
 
 export function Header() {
-  const { navigate } = useRouter();
-  const { isAuthenticated, user: currentUser, logout } = useAuth();
+  const navigate = useNavigate();
+  const { isAuthenticated, logout, user: currentUser } = useAuth();
 
   const handleSignOut = () => {
     logout();
@@ -24,19 +26,19 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-zinc-200 bg-white">
+    <header className="sticky top-0 z-50 w-full border-b bg-white dark:bg-zinc-950 dark:border-zinc-800">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-8">
-          <Link to="/" className="text-2xl font-serif">
+          <Link to="/" className="text-2xl font-serif dark:text-white">
             Medium
           </Link>
 
           <div className="hidden md:flex relative w-64">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400 dark:text-zinc-500" />
             <Input
               type="search"
               placeholder="Search"
-              className="pl-10 bg-zinc-50 border-zinc-200"
+              className="pl-10 bg-zinc-50 border-zinc-200 dark:bg-zinc-900 dark:border-zinc-800"
             />
           </div>
         </div>
@@ -51,9 +53,7 @@ export function Header() {
                 </Button>
               </Link>
 
-              <Button variant="ghost" size="icon">
-                <Bell className="h-5 w-5" />
-              </Button>
+              <Notifications />
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -64,10 +64,10 @@ export function Header() {
                     <Avatar className="h-9 w-9">
                       <AvatarImage
                         src={currentUser?.image ?? ''}
-                        alt={currentUser?.userName}
+                        alt={currentUser?.username}
                       />
                       <AvatarFallback>
-                        {(currentUser?.userName ?? '')
+                        {currentUser?.username
                           .split(' ')
                           .map((n) => n[0])
                           .join('')}
@@ -77,7 +77,7 @@ export function Header() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuItem asChild>
-                    <Link to="/">Profile</Link>
+                    <Link to="/profile">Profile</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link to="/">Library</Link>
@@ -90,7 +90,7 @@ export function Header() {
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link to="/">Settings</Link>
+                    <Link to="/settings">Settings</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleSignOut}>
                     Sign out
@@ -105,13 +105,14 @@ export function Header() {
                   Sign In
                 </Button>
               </Link>
-              <Link to="/register">
+              <Link to="/signup">
                 <Button size="sm" className="bg-green-600 hover:bg-green-700">
                   Get Started
                 </Button>
               </Link>
             </>
           )}
+          <ThemeToggle />
         </nav>
       </div>
     </header>

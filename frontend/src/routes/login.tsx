@@ -1,16 +1,15 @@
-import { AuthGuard, LoginForm } from '@/features';
+import { AuthGuard } from '@/features';
+import { LoginPage } from '@/features/auth';
 import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/login')({
-  component: LoginPage,
+  component: Login,
 });
 
-function LoginPage() {
+function Login() {
   return (
-    <AuthGuard requireAuth={false} redirectTo="/dashboard">
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <LoginForm />
-      </div>
+    <AuthGuard requireAuth={false} redirectTo="/">
+      <LoginPage />
     </AuthGuard>
   );
 }

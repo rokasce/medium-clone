@@ -1,0 +1,212 @@
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { mockArticles } from '@/pages/home';
+import { Link } from '@tanstack/react-router';
+import { Bookmark, MessageCircle, Share2, ThumbsUp } from 'lucide-react';
+import { useState } from 'react';
+
+export function Article({ slug }: { slug: string }) {
+  const article = mockArticles.find((a) => a.slug === slug);
+  const [claps, setClaps] = useState(article?.claps || 0);
+
+  if (!article) {
+    return (
+      <div className="container mx-auto px-4 py-8 text-center">
+        <h1 className="text-2xl">Article not found</h1>
+        <Link
+          to="/"
+          className="text-blue-600 hover:underline mt-4 inline-block"
+        >
+          Return to home
+        </Link>
+      </div>
+    );
+  }
+
+  const relatedArticles = mockArticles
+    .filter((a) => a.slug !== slug)
+    .slice(0, 3);
+
+  return (
+    <div className="min-h-screen bg-white">
+      <article className="max-w-3xl mx-auto px-4 py-12">
+        {/* Article header */}
+        <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
+          {article.title}
+        </h1>
+
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-3">
+            <Link to="/profile">
+              <Avatar className="h-12 w-12">
+                <AvatarImage
+                  src={article.author.avatar}
+                  alt={article.author.name}
+                />
+                <AvatarFallback>
+                  {article.author.name
+                    .split(' ')
+                    .map((n) => n[0])
+                    .join('')}
+                </AvatarFallback>
+              </Avatar>
+            </Link>
+            <div>
+              <Link to="/profile" className="font-semibold hover:underline">
+                {article.author.name}
+              </Link>
+              <div className="text-sm text-zinc-600">
+                {article.readTime} min read · {article.publishedAt}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <Separator className="mb-6" />
+
+        {/* Action bar */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-2"
+              onClick={() => setClaps(claps + 1)}
+            >
+              <ThumbsUp className="h-4 w-4" />
+              {claps}
+            </Button>
+            <Button variant="ghost" size="sm" className="gap-2">
+              <MessageCircle className="h-4 w-4" />
+              12
+            </Button>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon">
+              <Bookmark className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="icon">
+              <Share2 className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Featured image */}
+        {article.imageUrl && (
+          <img
+            src={article.imageUrl}
+            alt={article.title}
+            className="w-full h-96 object-cover rounded mb-8"
+          />
+        )}
+
+        {/* Article content */}
+        <div className="prose prose-lg max-w-none mb-12">
+          <div className="whitespace-pre-wrap">{article.content}</div>
+        </div>
+
+        {/* Tags */}
+        <div className="flex flex-wrap gap-2 mb-8">
+          {article.tags.map((tag) => (
+            <Button
+              key={tag}
+              variant="outline"
+              size="sm"
+              className="rounded-full"
+            >
+              {tag}
+            </Button>
+          ))}
+        </div>
+
+        <Separator className="my-8" />
+
+        {/* Author card */}
+        <div className="flex items-start gap-4 p-6 bg-zinc-50 rounded-lg mb-12">
+          <Link to="/profile">
+            <Avatar className="h-16 w-16">
+              <AvatarImage
+                src={article.author.avatar}
+                alt={article.author.name}
+              />
+              <AvatarFallback>
+                {article.author.name
+                  .split(' ')
+                  .map((n) => n[0])
+                  .join('')}
+              </AvatarFallback>
+            </Avatar>
+          </Link>
+          <div className="flex-1">
+            <Link
+              to="/profile"
+              className="font-semibold text-lg hover:underline"
+            >
+              {article.author.name}
+            </Link>
+            <p className="text-zinc-600 mt-2">{article.author.bio}</p>
+            <Button variant="outline" size="sm" className="mt-4">
+              Follow
+            </Button>
+          </div>
+        </div>
+
+        {/* Related articles */}
+        {relatedArticles.length > 0 && (
+          <div>
+            <h2 className="text-2xl font-bold mb-6">More from Medium</h2>
+            <div className="space-y-6">
+              {relatedArticles.map((relatedArticle) => (
+                <Link
+                  key={relatedArticle.slug}
+                  to={`/article/${relatedArticle.slug}`}
+                  className="block group"
+                >
+                  <div className="flex gap-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Avatar className="h-5 w-5">
+                          <AvatarImage
+                            src={relatedArticle.author.avatar}
+                            alt={relatedArticle.author.name}
+                          />
+                          <AvatarFallback>
+                            {relatedArticle.author.name
+                              .split(' ')
+                              .map((n) => n[0])
+                              .join('')}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="text-sm">
+                          {relatedArticle.author.name}
+                        </span>
+                      </div>
+                      <h3 className="font-semibold mb-1 group-hover:underline">
+                        {relatedArticle.title}
+                      </h3>
+                      <p className="text-sm text-zinc-600 line-clamp-2">
+                        {relatedArticle.excerpt}
+                      </p>
+                      <div className="text-xs text-zinc-500 mt-2">
+                        {relatedArticle.readTime} min read
+                      </div>
+                    </div>
+                    {relatedArticle.imageUrl && (
+                      <img
+                        src={relatedArticle.imageUrl}
+                        alt={relatedArticle.title}
+                        className="w-24 h-24 object-cover rounded"
+                      />
+                    )}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+      </article>
+    </div>
+  );
+}

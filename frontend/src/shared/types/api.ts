@@ -13,7 +13,7 @@ export interface ApiResponse<T> {
 // Auth types
 export interface User {
   id: string;
-  userName: string;
+  username: string;
   email: string;
   bio: string | null;
   image: string | null;

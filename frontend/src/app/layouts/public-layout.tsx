@@ -33,7 +33,7 @@ export function PublicLayout({ children }: PublicLayoutProps) {
           <div className="flex items-center gap-2">
             <Button variant="ghost" asChild>
               <Link
-                to="/register"
+                to="/signup"
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 Sign in
