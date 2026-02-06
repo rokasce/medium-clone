@@ -1,44 +1,76 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations.Schema;
 using Blog.Domain.Abstractions;
+using Blog.Domain.Common.ValueObjects;
+using Blog.Domain.Users.ValueObjects;
 
 namespace Blog.Domain.Users;
 
 public sealed class User : Entity
 {
-    private User(Guid id, string email, string username)
+    private User(Guid id, Email email, Username username)
         : base(id)
     {
         Email = email;
         Username = username;
         CreatedAt = DateTime.UtcNow;
-        DisplayName = username;
+        DisplayName = username.Value;
         IsVerified = true;
     }
+
+    private User() { }
+
     private readonly List<UserFollower> _followers = new();
     private readonly List<UserFollower> _following = new();
 
-    public string Email { get; private set; }
-    public string Username { get; private set; }
-    public string DisplayName { get; private set; }
+    public Email Email { get; private set; }
+    public Username Username { get; private set; }
+    public string DisplayName { get; private set; } = string.Empty;
     public string? Bio { get; private set; }
-    public string? AvatarUrl { get; private set; }
+    public ImageUrl? AvatarUrl { get; private set; }
     public bool IsVerified { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime? LastActiveAt { get; private set; }
     public string IdentityId { get; private set; } = string.Empty;
 
-    public static User Create(string email, string username)
+    public static Result<User> Create(string email, string username)
     {
-        var user = new User(Guid.NewGuid(), email, username);
+        var emailResult = Email.Create(email);
+        if (emailResult.IsFailure)
+        {
+            return Result.Failure<User>(emailResult.Error);
+        }
 
-        // user.RaiseDomainEvent(new UserCreatedDomainEvent(user.Id));
+        var usernameResult = Username.Create(username);
+        if (usernameResult.IsFailure)
+        {
+            return Result.Failure<User>(usernameResult.Error);
+        }
 
-        return user;
+        var user = new User(Guid.NewGuid(), emailResult.Value, usernameResult.Value);
+
+        return Result.Success(user);
     }
 
     public void SetIdentityId(string identityId)
     {
         IdentityId = identityId;
+    }
+
+    public Result SetAvatarUrl(string avatarUrl)
+    {
+        var result = ImageUrl.Create(avatarUrl);
+        if (result.IsFailure)
+        {
+            return Result.Failure(result.Error);
+        }
+
+        AvatarUrl = result.Value;
+        return Result.Success();
+    }
+
+    public void RemoveAvatarUrl()
+    {
+        AvatarUrl = null;
     }
 
     [NotMapped]

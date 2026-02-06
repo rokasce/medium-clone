@@ -35,7 +35,9 @@ public static class DependencyInjection
             throw new ArgumentNullException(nameof(configuration));
 
         services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseNpgsql(connectionString, npgsqlOptions => npgsqlOptions.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+            options
+                .UseNpgsql(connectionString, npgsqlOptions => npgsqlOptions.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName))
+                .UseSnakeCaseNamingConvention());
 
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
 

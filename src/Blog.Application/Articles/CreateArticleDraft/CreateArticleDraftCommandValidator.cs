@@ -1,4 +1,3 @@
-using System;
 using FluentValidation;
 
 namespace Blog.Application.Articles.CreateArticleDraft;
@@ -8,9 +7,9 @@ public sealed class CreateArticleDraftCommandValidator
 {
     public CreateArticleDraftCommandValidator()
     {
-        RuleFor(x => x.UserId)
+        RuleFor(x => x.IdentityId)
             .NotEmpty()
-            .WithMessage("User ID is required");
+            .WithMessage("Identity ID is required");
 
         RuleFor(x => x.Title)
             .NotEmpty()

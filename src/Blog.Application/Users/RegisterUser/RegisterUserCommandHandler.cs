@@ -23,7 +23,14 @@ internal sealed class RegisterUserCommandHandler : IRequestHandler<RegisterUserC
         RegisterUserCommand request,
         CancellationToken cancellationToken)
     {
-        var user = User.Create(request.Email, request.Email.Split('@')[0]);
+        var userResult = User.Create(request.Email, request.Email.Split('@')[0]);
+
+        if (userResult.IsFailure)
+        {
+            return Result.Failure<Guid>(userResult.Error);
+        }
+
+        var user = userResult.Value;
 
         var identityId = await _authenticationService.RegisterAsync(
             user,

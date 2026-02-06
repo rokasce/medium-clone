@@ -1,8 +1,11 @@
 using Blog.Domain.Abstractions;
 using Blog.Domain.Articles.Events;
 using Blog.Domain.Articles.ValueObjects;
+using Blog.Domain.Common.ValueObjects;
 using Blog.Domain.Publications;
+using Blog.Domain.Publications.ValueObjects;
 using Blog.Domain.Users;
+using Blog.Domain.Users.ValueObjects;
 
 namespace Blog.Domain.Articles;
 
@@ -12,9 +15,9 @@ public sealed class Article : Entity
 
     private Article(
         Guid id,
-        Guid authorId,
+        AuthorId authorId,
         string title,
-        string slug,
+        Slug slug,
         string subtitle,
         string content)
     {
@@ -31,13 +34,13 @@ public sealed class Article : Entity
     private readonly List<ArticleTag> _tags = new();
     private readonly List<ArticleRevision> _revisions = new();
 
-    public Guid AuthorId { get; private set; }
-    public Guid? PublicationId { get; private set; }
+    public AuthorId AuthorId { get; private set; }
+    public PublicationId? PublicationId { get; private set; }
     public string Title { get; private set; } = string.Empty;
-    public string Slug { get; private set; } = string.Empty;
+    public Slug Slug { get; private set; }
     public string Subtitle { get; private set; } = string.Empty;
     public string Content { get; private set; } = string.Empty;
-    public string? FeaturedImageUrl { get; private set; }
+    public ImageUrl? FeaturedImageUrl { get; private set; }
     public ArticleStatus Status { get; private set; }
     public int ReadingTimeMinutes { get; private set; }
     public DateTime CreatedAt { get; private set; }
@@ -53,18 +56,24 @@ public sealed class Article : Entity
 
     // ========== FACTORY METHODS ==========
 
-    public static Article CreateDraft(
-        Guid authorId,
+    public static Result<Article> CreateDraft(
+        AuthorId authorId,
         string title,
         string slug,
         string subtitle,
         string content)
     {
+        var slugResult = Slug.Create(slug);
+        if (slugResult.IsFailure)
+        {
+            return Result.Failure<Article>(slugResult.Error);
+        }
+
         var article = new Article(
             Guid.NewGuid(),
             authorId,
             title,
-            slug,
+            slugResult.Value,
             subtitle,
             content);
 
@@ -77,7 +86,7 @@ public sealed class Article : Entity
             Title = article.Title
         });
 
-        return article;
+        return Result.Success(article);
     }
 
     // ========== COMMAND METHODS (State Changes) ==========
@@ -177,16 +186,15 @@ public sealed class Article : Entity
         });
     }
 
-    public void SetFeaturedImage(string imageUrl)
+    public Result SetFeaturedImage(string imageUrl)
     {
-        if (string.IsNullOrWhiteSpace(imageUrl))
+        var result = ImageUrl.Create(imageUrl);
+        if (result.IsFailure)
         {
-            throw new ArgumentException(
-                "Image URL cannot be empty",
-                nameof(imageUrl));
+            return Result.Failure(result.Error);
         }
 
-        FeaturedImageUrl = imageUrl;
+        FeaturedImageUrl = result.Value;
         UpdatedAt = DateTime.UtcNow;
 
         AddDomainEvent(new ArticleFeaturedImageChanged
@@ -194,6 +202,8 @@ public sealed class Article : Entity
             ArticleId = Id,
             ImageUrl = imageUrl
         });
+
+        return Result.Success();
     }
 
     public void RemoveFeaturedImage()
@@ -202,7 +212,7 @@ public sealed class Article : Entity
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public void AddTag(Guid tagId)
+    public void AddTag(TagId tagId)
     {
         if (_tags.Any(t => t.TagId == tagId))
         {
@@ -215,7 +225,7 @@ public sealed class Article : Entity
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public void RemoveTag(Guid tagId)
+    public void RemoveTag(TagId tagId)
     {
         var tag = _tags.FirstOrDefault(t => t.TagId == tagId);
         if (tag is not null)
@@ -225,7 +235,7 @@ public sealed class Article : Entity
         }
     }
 
-    public void UpdateTags(IEnumerable<Guid> tagIds)
+    public void UpdateTags(IEnumerable<TagId> tagIds)
     {
         _tags.Clear();
 
@@ -243,7 +253,7 @@ public sealed class Article : Entity
         });
     }
 
-    public void SubmitToPublication(Guid publicationId)
+    public void SubmitToPublication(PublicationId publicationId)
     {
         if (Status != ArticleStatus.Published)
         {
@@ -259,7 +269,7 @@ public sealed class Article : Entity
         });
     }
 
-    public void AssignToPublication(Guid publicationId)
+    public void AssignToPublication(PublicationId publicationId)
     {
         PublicationId = publicationId;
         UpdatedAt = DateTime.UtcNow;

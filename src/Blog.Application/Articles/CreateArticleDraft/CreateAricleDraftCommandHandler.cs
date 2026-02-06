@@ -2,6 +2,7 @@ using Blog.Application.Common.Interfaces;
 using Blog.Domain.Abstractions;
 using Blog.Domain.Articles;
 using Blog.Domain.Users;
+using Blog.Domain.Users.ValueObjects;
 using MediatR;
 
 namespace Blog.Application.Articles.CreateArticleDraft;
@@ -47,12 +48,19 @@ public sealed class CreateArticleDraftCommandHandler
 
         var slug = GenerateSlug(request.Title);
 
-        var article = Article.CreateDraft(
-            author.Id,
+        var articleResult = Article.CreateDraft(
+            AuthorId.From(author.Id),
             request.Title,
             slug,
             request.Subtitle,
             request.Content);
+
+        if (articleResult.IsFailure)
+        {
+            return Result.Failure<Guid>(articleResult.Error);
+        }
+
+        var article = articleResult.Value;
 
         await _articleRepository.AddAsync(article, cancellationToken);
         await _articleRepository.SaveChangesAsync(cancellationToken);
