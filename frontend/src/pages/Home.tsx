@@ -1,11 +1,5 @@
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { useAuth } from '@/features/auth/hooks';
 import {
   Avatar,
@@ -14,7 +8,7 @@ import {
   Separator,
 } from '@/shared/components/ui';
 import { Link } from '@tanstack/react-router';
-import { Bookmark } from 'lucide-react';
+import { Bookmark, PenLine } from 'lucide-react';
 
 export default function Home() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -36,74 +30,47 @@ export default function Home() {
     );
   }
 
-  if (isAuthenticated) {
-    return (
-      <div className="space-y-8">
-        <div className="flex items-center gap-4">
-          {user?.image && (
-            <img
-              src={user.image}
-              alt={user.username}
-              className="h-16 w-16 rounded-full object-cover"
-            />
-          )}
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight text-foreground">
-              Welcome back, {user?.username}!
-            </h1>
-            <p className="text-muted-foreground mt-1">
-              {user?.email}
-              {user?.bio && <span className="block text-sm">{user.bio}</span>}
-            </p>
-          </div>
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <Card>
-            <CardHeader>
-              <CardTitle>Your Drafts</CardTitle>
-              <CardDescription>Continue working on your drafts</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button variant="outline" className="w-full" asChild>
-                <a href="/dashboard">View Drafts</a>
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Write</CardTitle>
-              <CardDescription>Start a new article</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button className="w-full" asChild>
-                <Link to="/write">New Article</Link>
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Explore</CardTitle>
-              <CardDescription>Discover new articles</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button variant="outline" className="w-full" asChild>
-                <a href="/explore">Browse Articles</a>
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Main content */}
+        {/* Main content - Article feed */}
         <div className="lg:col-span-8">
+          {/* Personalized greeting for authenticated users */}
+          {isAuthenticated && user && (
+            <div className="flex items-center justify-between mb-8 pb-6 border-b border-border">
+              <div className="flex items-center gap-3">
+                {user.image ? (
+                  <img
+                    src={user.image}
+                    alt={user.username}
+                    className="h-10 w-10 rounded-full object-cover"
+                  />
+                ) : (
+                  <Avatar className="h-10 w-10">
+                    <AvatarFallback>
+                      {user.username
+                        .split(' ')
+                        .map((n) => n[0])
+                        .join('')}
+                    </AvatarFallback>
+                  </Avatar>
+                )}
+                <div>
+                  <p className="text-sm text-muted-foreground">Welcome back</p>
+                  <p className="font-semibold text-foreground">
+                    {user.username}
+                  </p>
+                </div>
+              </div>
+              <Button asChild>
+                <Link to="/write" className="gap-2">
+                  <PenLine className="h-4 w-4" />
+                  Write
+                </Link>
+              </Button>
+            </div>
+          )}
+
           <div className="space-y-8">
             {mockArticles.map((article) => (
               <article
@@ -152,7 +119,11 @@ export default function Home() {
                           <span>{article.claps} claps</span>
                         </div>
 
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-muted-foreground"
+                        >
                           <Bookmark className="h-4 w-4" />
                         </Button>
                       </div>
@@ -177,6 +148,40 @@ export default function Home() {
         {/* Sidebar */}
         <aside className="hidden lg:block lg:col-span-4">
           <div className="sticky top-20">
+            {/* Quick actions for authenticated users */}
+            {isAuthenticated && (
+              <>
+                <Card className="mb-6">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base">Quick Actions</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start"
+                      asChild
+                    >
+                      <Link to="/write">
+                        <PenLine className="h-4 w-4 mr-2" />
+                        New Article
+                      </Link>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start"
+                      asChild
+                    >
+                      <a href="/dashboard">
+                        <Bookmark className="h-4 w-4 mr-2" />
+                        Your Drafts
+                      </a>
+                    </Button>
+                  </CardContent>
+                </Card>
+                <Separator className="my-6" />
+              </>
+            )}
+
             <div className="mb-6">
               <h3 className="font-semibold mb-4 text-foreground">
                 Trending on Medium
