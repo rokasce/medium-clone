@@ -8,7 +8,7 @@ using MediatR;
 namespace Blog.Application.Articles.CreateArticleDraft;
 
 public sealed class CreateArticleDraftCommandHandler
-    : IRequestHandler<CreateArticleDraftCommand, Result<Guid>>
+    : IRequestHandler<CreateArticleDraftCommand, Result<CreateArticleDraftResponse>>
 {
     private readonly IArticleRepository _articleRepository;
     private readonly IAuthorRepository _authorRepository;
@@ -24,7 +24,7 @@ public sealed class CreateArticleDraftCommandHandler
         _userRepository = userRepository;
     }
 
-    public async Task<Result<Guid>> Handle(
+    public async Task<Result<CreateArticleDraftResponse>> Handle(
         CreateArticleDraftCommand request,
         CancellationToken cancellationToken)
     {
@@ -33,7 +33,7 @@ public sealed class CreateArticleDraftCommandHandler
 
         if (user is null)
         {
-            return Result.Failure<Guid>(UserErrors.NotFound);
+            return Result.Failure<CreateArticleDraftResponse>(UserErrors.NotFound);
         }
 
         // Get or create author for the user
@@ -57,7 +57,7 @@ public sealed class CreateArticleDraftCommandHandler
 
         if (articleResult.IsFailure)
         {
-            return Result.Failure<Guid>(articleResult.Error);
+            return Result.Failure<CreateArticleDraftResponse>(articleResult.Error);
         }
 
         var article = articleResult.Value;
@@ -65,7 +65,7 @@ public sealed class CreateArticleDraftCommandHandler
         await _articleRepository.AddAsync(article, cancellationToken);
         await _articleRepository.SaveChangesAsync(cancellationToken);
 
-        return Result.Success(article.Id);
+        return Result.Success(new CreateArticleDraftResponse(article.Id, article.Slug));
     }
 
     private static string GenerateSlug(string title)

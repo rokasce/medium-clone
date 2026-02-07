@@ -27,4 +27,8 @@ public static class ArticleErrors
     public static readonly Error NotPublished = Error.Failure(
         "Article.NotPublished",
         "Only published articles can be unpublished");
+
+    public static readonly Error Unauthorized = Error.Failure(
+        "Article.Unauthorized",
+        "You are not authorized to access this article");
 }
