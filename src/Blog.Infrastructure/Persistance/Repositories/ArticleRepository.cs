@@ -65,4 +65,53 @@ public sealed class ArticleRepository : Repository<Article>, IArticleRepository
             .OrderByDescending(a => a.PublishedAt)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<(List<Article> Articles, int TotalCount)> GetPublishedArticlesPagedAsync(
+        int page,
+        int pageSize,
+        string? searchTerm,
+        Guid? tagId,
+        string? sortBy,
+        CancellationToken cancellationToken)
+    {
+        var query = DbSet
+            .Include(a => a.Author)
+                .ThenInclude(author => author.User)
+            .Where(a => a.Status == ArticleStatus.Published)
+            .AsQueryable();
+
+        // Search filter
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            var term = searchTerm.ToLower();
+            query = query.Where(a =>
+                a.Title.ToLower().Contains(term) ||
+                a.Subtitle.ToLower().Contains(term));
+        }
+
+        // Tag filter
+        if (tagId.HasValue)
+        {
+            query = query.Where(a => a.Tags.Any(t => t.TagId == tagId.Value));
+        }
+
+        // Get total count before pagination
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        // Sorting
+        query = sortBy?.ToLower() switch
+        {
+            "oldest" => query.OrderBy(a => a.PublishedAt),
+            "title" => query.OrderBy(a => a.Title),
+            _ => query.OrderByDescending(a => a.PublishedAt) // "latest" is default
+        };
+
+        // Pagination
+        var articles = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+
+        return (articles, totalCount);
+    }
 }

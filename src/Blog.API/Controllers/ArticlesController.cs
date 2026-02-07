@@ -1,7 +1,9 @@
 using Blog.Application.Articles.CreateArticleDraft;
 using Blog.Application.Articles.GetArticleBySlug;
 using Blog.Application.Articles.GetMyArticles;
+using Blog.Application.Articles.GetPublishedArticles;
 using Blog.Application.Articles.PublishArticleCommand;
+using Blog.Application.Common.Pagination;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +18,26 @@ public sealed class ArticlesController : ApiControllerBase
     public ArticlesController(ISender sender)
     {
         _sender = sender;
+    }
+
+    [HttpGet]
+    [ProducesResponseType(typeof(PagedResult<PublishedArticleResponse>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPublishedArticles(
+        [FromQuery] PaginationParams pagination,
+        [FromQuery] string? search = null,
+        [FromQuery] Guid? tagId = null,
+        [FromQuery] string? sortBy = null,
+        CancellationToken cancellationToken = default)
+    {
+        var query = new GetPublishedArticlesQuery(pagination, search, tagId, sortBy);
+        var result = await _sender.Send(query, cancellationToken);
+
+        if (result.IsFailure)
+        {
+            return BadRequest(new ErrorResponse(result.Error.Code, result.Error.Message));
+        }
+
+        return Ok(result.Value);
     }
 
     [Authorize]
