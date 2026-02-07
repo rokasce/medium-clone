@@ -1,5 +1,6 @@
 using Blog.Application.Articles.CreateArticleDraft;
 using Blog.Application.Articles.GetArticleBySlug;
+using Blog.Application.Articles.GetMyArticles;
 using Blog.Application.Articles.PublishArticleCommand;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -15,6 +16,27 @@ public sealed class ArticlesController : ApiControllerBase
     public ArticlesController(ISender sender)
     {
         _sender = sender;
+    }
+
+    [Authorize]
+    [HttpGet("my")]
+    [ProducesResponseType(typeof(List<ArticleSummaryResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> GetMyArticles(CancellationToken cancellationToken)
+    {
+        var identityId = GetCurrentIdentityId();
+
+        if (identityId is null) return Unauthorized();
+
+        var query = new GetMyArticlesQuery(identityId);
+        var result = await _sender.Send(query, cancellationToken);
+
+        if (result.IsFailure)
+        {
+            return BadRequest(new ErrorResponse(result.Error.Code, result.Error.Message));
+        }
+
+        return Ok(result.Value);
     }
 
     [Authorize]
@@ -80,24 +102,37 @@ public sealed class ArticlesController : ApiControllerBase
         return Ok(new CreateArticleResponse(result.Value.Id, result.Value.Slug));
     }
 
+    [Authorize]
     [HttpPost("{id:guid}/publish")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Publish(
         Guid id,
         CancellationToken cancellationToken)
     {
-        var command = new PublishArticleCommand { ArticleId = id };
+        var identityId = GetCurrentIdentityId();
+
+        if (identityId is null) return Unauthorized();
+
+        var command = new PublishArticleCommand
+        {
+            ArticleId = id,
+            IdentityId = identityId
+        };
 
         var result = await _sender.Send(command, cancellationToken);
 
         if (result.IsFailure)
         {
-            // Return 404 for NotFound, 400 for other errors
-            return result.Error.Code == "Article.NotFound"
-                ? NotFound(new ErrorResponse(result.Error.Code, result.Error.Message))
-                : BadRequest(new ErrorResponse(result.Error.Code, result.Error.Message));
+            return result.Error.Code switch
+            {
+                "Article.NotFound" => NotFound(new ErrorResponse(result.Error.Code, result.Error.Message)),
+                "Article.Unauthorized" => Forbid(),
+                _ => BadRequest(new ErrorResponse(result.Error.Code, result.Error.Message))
+            };
         }
 
         return Ok();

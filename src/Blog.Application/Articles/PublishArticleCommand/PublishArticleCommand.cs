@@ -6,4 +6,5 @@ namespace Blog.Application.Articles.PublishArticleCommand;
 public sealed record PublishArticleCommand : IRequest<Result>
 {
     public required Guid ArticleId { get; init; }
+    public required string IdentityId { get; init; }
 }
