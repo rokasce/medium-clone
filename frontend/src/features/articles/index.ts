@@ -1,7 +1,7 @@
 export {
   useArticles,
   useArticle,
-  useMyDrafts,
+  useMyArticles,
   useAuthorArticles,
   useFeed,
   useInfiniteArticles,
@@ -26,3 +26,4 @@ export type {
 } from './schemas/article-schemas';
 
 export { default as WritePage } from './pages/write-page';
+export { default as EditPage } from './pages/edit-page';

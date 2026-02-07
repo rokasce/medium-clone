@@ -17,6 +17,7 @@ import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ArticlesSlugRouteImport } from './routes/articles.$slug'
 import { Route as ArticlesPreviewSlugRouteImport } from './routes/articles.preview.$slug'
+import { Route as ArticlesEditSlugRouteImport } from './routes/articles.edit.$slug'
 
 const WriteRoute = WriteRouteImport.update({
   id: '/write',
@@ -58,6 +59,11 @@ const ArticlesPreviewSlugRoute = ArticlesPreviewSlugRouteImport.update({
   path: '/articles/preview/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ArticlesEditSlugRoute = ArticlesEditSlugRouteImport.update({
+  id: '/articles/edit/$slug',
+  path: '/articles/edit/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -67,6 +73,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/write': typeof WriteRoute
   '/articles/$slug': typeof ArticlesSlugRoute
+  '/articles/edit/$slug': typeof ArticlesEditSlugRoute
   '/articles/preview/$slug': typeof ArticlesPreviewSlugRoute
 }
 export interface FileRoutesByTo {
@@ -77,6 +84,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/write': typeof WriteRoute
   '/articles/$slug': typeof ArticlesSlugRoute
+  '/articles/edit/$slug': typeof ArticlesEditSlugRoute
   '/articles/preview/$slug': typeof ArticlesPreviewSlugRoute
 }
 export interface FileRoutesById {
@@ -88,6 +96,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/write': typeof WriteRoute
   '/articles/$slug': typeof ArticlesSlugRoute
+  '/articles/edit/$slug': typeof ArticlesEditSlugRoute
   '/articles/preview/$slug': typeof ArticlesPreviewSlugRoute
 }
 export interface FileRouteTypes {
@@ -100,6 +109,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/write'
     | '/articles/$slug'
+    | '/articles/edit/$slug'
     | '/articles/preview/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -110,6 +120,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/write'
     | '/articles/$slug'
+    | '/articles/edit/$slug'
     | '/articles/preview/$slug'
   id:
     | '__root__'
@@ -120,6 +131,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/write'
     | '/articles/$slug'
+    | '/articles/edit/$slug'
     | '/articles/preview/$slug'
   fileRoutesById: FileRoutesById
 }
@@ -131,6 +143,7 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   WriteRoute: typeof WriteRoute
   ArticlesSlugRoute: typeof ArticlesSlugRoute
+  ArticlesEditSlugRoute: typeof ArticlesEditSlugRoute
   ArticlesPreviewSlugRoute: typeof ArticlesPreviewSlugRoute
 }
 
@@ -192,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ArticlesPreviewSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/articles/edit/$slug': {
+      id: '/articles/edit/$slug'
+      path: '/articles/edit/$slug'
+      fullPath: '/articles/edit/$slug'
+      preLoaderRoute: typeof ArticlesEditSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -203,6 +223,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   WriteRoute: WriteRoute,
   ArticlesSlugRoute: ArticlesSlugRoute,
+  ArticlesEditSlugRoute: ArticlesEditSlugRoute,
   ArticlesPreviewSlugRoute: ArticlesPreviewSlugRoute,
 }
 export const routeTree = rootRouteImport

@@ -28,7 +28,7 @@ export function useArticle(slug: string) {
   });
 }
 
-export function useMyDrafts(params?: ArticleFilterParams) {
+export function useMyArticles(params?: ArticleFilterParams) {
   return useQuery({
     queryKey: queryKeys.articles.drafts(params),
     queryFn: () => articleApi.getMyDrafts(params),

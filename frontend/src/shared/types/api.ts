@@ -59,20 +59,6 @@ export interface UpdateProfileRequest {
 
 // Blog types
 
-export interface ArticleSummary {
-  id: string;
-  slug: string;
-  title: string;
-  description: string;
-  createdAt: string;
-  publishedAt?: string;
-  createdBy: string;
-  isPublished: boolean;
-  isFavorited: boolean;
-  favoritesCount: number;
-  tags: Tag[];
-}
-
 export interface CreateArticleRequest {
   title: string;
   content: string;

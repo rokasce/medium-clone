@@ -3,11 +3,33 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { mockArticles } from '@/pages/home';
 import type { Article as IArticle } from '@/types';
-import { Link } from '@tanstack/react-router';
-import { Bookmark, MessageCircle, Share2, ThumbsUp } from 'lucide-react';
+import { Link, useRouter } from '@tanstack/react-router';
+import { Bookmark, Edit3, MessageCircle, Send, Share2, ThumbsUp } from 'lucide-react';
+import { toast } from 'sonner';
 import { HtmlRenderer } from './html-renderer';
+import { usePublishArticle } from '../hooks';
 
 export function Article({ article }: { article: IArticle }) {
+  const router = useRouter();
+  const { mutate: publishArticle, isPending: isPublishing } =
+    usePublishArticle();
+
+  const isDraft = article?.status === 'Draft';
+
+  const handlePublish = () => {
+    publishArticle(article.id, {
+      onSuccess: () => {
+        toast.success('Article published successfully!');
+        router.navigate({ to: '/articles/$slug', params: { slug: article.slug } });
+      },
+      onError: (error) => {
+        toast.error('Failed to publish article', {
+          description: error.message,
+        });
+      },
+    });
+  };
+
   if (!article) {
     return (
       <div className="container mx-auto px-4 py-8 text-center">
@@ -59,6 +81,25 @@ export function Article({ article }: { article: IArticle }) {
               </div>
             </div>
           </div>
+
+          {isDraft && (
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" asChild>
+                <Link to="/articles/edit/$slug" params={{ slug: article.slug }}>
+                  <Edit3 className="h-4 w-4 mr-2" />
+                  Edit
+                </Link>
+              </Button>
+              <Button
+                size="sm"
+                onClick={handlePublish}
+                disabled={isPublishing}
+              >
+                <Send className="h-4 w-4 mr-2" />
+                {isPublishing ? 'Publishing...' : 'Publish'}
+              </Button>
+            </div>
+          )}
         </div>
 
         <Separator className="mb-6" />

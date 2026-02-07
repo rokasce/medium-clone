@@ -1,11 +1,10 @@
 import { BaseAPI } from '@/shared/lib/base-api';
 import type {
-  ArticleSummary,
   CreateArticleRequest,
   PagedResult,
   UpdateArticleRequest,
 } from '@/shared/types/api';
-import type { Article } from '@/types';
+import type { Article, ArticleSummary } from '@/types';
 
 export class ArticleAPI extends BaseAPI {
   // Get paginated list of published articles
@@ -30,13 +29,13 @@ export class ArticleAPI extends BaseAPI {
     );
   }
 
-  // Get current user's drafts
+  // Get current user's articles (drafts and published)
   async getMyDrafts(params?: {
     page?: number;
     pageSize?: number;
-  }): Promise<PagedResult<ArticleSummary>> {
+  }): Promise<ArticleSummary[]> {
     return this.handleRequest(() =>
-      this.axiosInstance.get<PagedResult<ArticleSummary>>('/articles/drafts', {
+      this.axiosInstance.get<ArticleSummary[]>('/articles/my', {
         params,
       })
     );
