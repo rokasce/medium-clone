@@ -1,7 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { mockArticles } from '@/pages/home';
 import type { Article as IArticle } from '@/types';
 import { Link, useRouter } from '@tanstack/react-router';
 import { Bookmark, Edit3, MessageCircle, Send, Share2, ThumbsUp } from 'lucide-react';
@@ -43,10 +42,6 @@ export function Article({ article }: { article: IArticle }) {
       </div>
     );
   }
-
-  const relatedArticles = mockArticles
-    .filter((a) => a.slug !== article.slug)
-    .slice(0, 3);
 
   return (
     <div className="min-h-screen bg-background">
@@ -189,60 +184,6 @@ export function Article({ article }: { article: IArticle }) {
           </div>
         </div>
 
-        {/* Related articles */}
-        {relatedArticles.length > 0 && (
-          <div>
-            <h2 className="text-2xl font-bold mb-6">More from Medium</h2>
-            <div className="space-y-6">
-              {relatedArticles.map((relatedArticle) => (
-                <Link
-                  key={relatedArticle.slug}
-                  to="/articles/$slug"
-                  params={{ slug: relatedArticle.slug }}
-                  className="block group"
-                >
-                  <div className="flex gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Avatar className="h-5 w-5">
-                          <AvatarImage
-                            src={relatedArticle.author.avatar}
-                            alt={relatedArticle.author.name}
-                          />
-                          <AvatarFallback>
-                            {relatedArticle.author.name
-                              .split(' ')
-                              .map((n) => n[0])
-                              .join('')}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span className="text-sm">
-                          {relatedArticle.author.name}
-                        </span>
-                      </div>
-                      <h3 className="font-semibold mb-1 group-hover:underline">
-                        {relatedArticle.title}
-                      </h3>
-                      <p className="text-sm text-muted-foreground line-clamp-2">
-                        {relatedArticle.excerpt}
-                      </p>
-                      <div className="text-xs text-muted-foreground mt-2">
-                        {relatedArticle.readTime} min read
-                      </div>
-                    </div>
-                    {relatedArticle.imageUrl && (
-                      <img
-                        src={relatedArticle.imageUrl}
-                        alt={relatedArticle.title}
-                        className="w-24 h-24 object-cover rounded"
-                      />
-                    )}
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
       </article>
     </div>
   );

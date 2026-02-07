@@ -100,9 +100,11 @@ export interface UserFollowResponse {
 }
 
 export interface PagedResult<T> {
+  items: T[];
   page: number;
   pageSize: number;
+  totalCount: number;
   totalPages: number;
-  totalRecords: number;
-  data: T[];
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
 }

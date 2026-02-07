@@ -11,9 +11,9 @@ export class ArticleAPI extends BaseAPI {
   async getPublished(params?: {
     page?: number;
     pageSize?: number;
-    authorId?: string;
-    searchTerm?: string;
-    tags?: string[];
+    search?: string;
+    tagId?: string;
+    sortBy?: string;
   }): Promise<PagedResult<ArticleSummary>> {
     return this.handleRequest(() =>
       this.axiosInstance.get<PagedResult<ArticleSummary>>('/articles', {
