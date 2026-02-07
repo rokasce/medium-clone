@@ -6,8 +6,6 @@ export default function WritePage() {
     <div className="min-h-screen bg-background">
       <div className="max-w-4xl mx-auto px-4 py-8">
         <CreateArticleForm />
-
-        {/* Publishing options */}
         <div className="border-t border-border pt-6">
           <h3 className="font-semibold mb-4 text-foreground">Story Preview</h3>
           <p className="text-sm text-muted-foreground mb-4">

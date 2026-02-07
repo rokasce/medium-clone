@@ -34,7 +34,7 @@ export class AuthAPI extends BaseAPI {
 
   async getCurrentUser(): Promise<User> {
     return this.handleRequest(() =>
-      this.axiosInstance.get<User>('/profiles/me')
+      this.axiosInstance.get<User>('/profile/me')
     );
   }
 

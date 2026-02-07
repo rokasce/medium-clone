@@ -1,8 +1,8 @@
+import { createFileRoute, useMatch } from '@tanstack/react-router';
 import { articleApi } from '@/features/articles/api/article-api';
 import { Article } from '@/features/articles/components/article';
-import { createFileRoute, useMatch } from '@tanstack/react-router';
 
-export const Route = createFileRoute('/articles/$slug')({
+export const Route = createFileRoute('/articles/preview/$slug')({
   loader: async ({ params }) => await articleApi.getBySlug(params.slug),
   component: RouteComponent,
 });

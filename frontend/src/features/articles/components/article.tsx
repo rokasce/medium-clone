@@ -2,14 +2,12 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { mockArticles } from '@/pages/home';
+import type { Article as IArticle } from '@/types';
 import { Link } from '@tanstack/react-router';
 import { Bookmark, MessageCircle, Share2, ThumbsUp } from 'lucide-react';
-import { useState } from 'react';
+import { HtmlRenderer } from './html-renderer';
 
-export function Article({ slug }: { slug: string }) {
-  const article = mockArticles.find((a) => a.slug === slug);
-  const [claps, setClaps] = useState(article?.claps || 0);
-
+export function Article({ article }: { article: IArticle }) {
   if (!article) {
     return (
       <div className="container mx-auto px-4 py-8 text-center">
@@ -25,7 +23,7 @@ export function Article({ slug }: { slug: string }) {
   }
 
   const relatedArticles = mockArticles
-    .filter((a) => a.slug !== slug)
+    .filter((a) => a.slug !== article.slug)
     .slice(0, 3);
 
   return (
@@ -41,11 +39,11 @@ export function Article({ slug }: { slug: string }) {
             <Link to="/profile">
               <Avatar className="h-12 w-12">
                 <AvatarImage
-                  src={article.author.avatar}
-                  alt={article.author.name}
+                  src={article.author.image}
+                  alt={article.author.username}
                 />
                 <AvatarFallback>
-                  {article.author.name
+                  {article.author.username
                     .split(' ')
                     .map((n) => n[0])
                     .join('')}
@@ -54,10 +52,10 @@ export function Article({ slug }: { slug: string }) {
             </Link>
             <div>
               <Link to="/profile" className="font-semibold hover:underline">
-                {article.author.name}
+                {article.author.username}
               </Link>
               <div className="text-sm text-muted-foreground">
-                {article.readTime} min read · {article.publishedAt}
+                {article.readingTimeMinutes} min read · {article.publishedAt}
               </div>
             </div>
           </div>
@@ -72,10 +70,10 @@ export function Article({ slug }: { slug: string }) {
               variant="ghost"
               size="sm"
               className="gap-2"
-              onClick={() => setClaps(claps + 1)}
+              onClick={() => {}}
             >
               <ThumbsUp className="h-4 w-4" />
-              {claps}
+              {article.isClapped ? article.clapsCount + 1 : article.clapsCount}
             </Button>
             <Button variant="ghost" size="sm" className="gap-2">
               <MessageCircle className="h-4 w-4" />
@@ -94,29 +92,26 @@ export function Article({ slug }: { slug: string }) {
         </div>
 
         {/* Featured image */}
-        {article.imageUrl && (
+        {article.featuredImage && (
           <img
-            src={article.imageUrl}
+            src={article.featuredImage}
             alt={article.title}
             className="w-full h-96 object-cover rounded mb-8"
           />
         )}
 
-        {/* Article content */}
-        <div className="prose prose-lg max-w-none mb-12">
-          <div className="whitespace-pre-wrap">{article.content}</div>
-        </div>
+        <HtmlRenderer html={article.content} />
 
         {/* Tags */}
         <div className="flex flex-wrap gap-2 mb-8">
-          {article.tags.map((tag) => (
+          {article.tags?.map((tag) => (
             <Button
-              key={tag}
+              key={tag.slug}
               variant="outline"
               size="sm"
               className="rounded-full"
             >
-              {tag}
+              {tag.name}
             </Button>
           ))}
         </div>
@@ -128,11 +123,11 @@ export function Article({ slug }: { slug: string }) {
           <Link to="/profile">
             <Avatar className="h-16 w-16">
               <AvatarImage
-                src={article.author.avatar}
-                alt={article.author.name}
+                src={article.author.image}
+                alt={article.author.username}
               />
               <AvatarFallback>
-                {article.author.name
+                {article.author.username
                   .split(' ')
                   .map((n) => n[0])
                   .join('')}
@@ -144,7 +139,7 @@ export function Article({ slug }: { slug: string }) {
               to="/profile"
               className="font-semibold text-lg hover:underline"
             >
-              {article.author.name}
+              {article.author.username}
             </Link>
             <p className="text-muted-foreground mt-2">{article.author.bio}</p>
             <Button variant="outline" size="sm" className="mt-4">
@@ -161,7 +156,8 @@ export function Article({ slug }: { slug: string }) {
               {relatedArticles.map((relatedArticle) => (
                 <Link
                   key={relatedArticle.slug}
-                  to={`/article/${relatedArticle.slug}`}
+                  to="/articles/$slug"
+                  params={{ slug: relatedArticle.slug }}
                   className="block group"
                 >
                   <div className="flex gap-4">

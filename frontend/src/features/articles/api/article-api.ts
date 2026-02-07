@@ -1,11 +1,11 @@
 import { BaseAPI } from '@/shared/lib/base-api';
 import type {
-  Article,
   ArticleSummary,
   CreateArticleRequest,
   PagedResult,
   UpdateArticleRequest,
 } from '@/shared/types/api';
+import type { Article } from '@/types';
 
 export class ArticleAPI extends BaseAPI {
   // Get paginated list of published articles
@@ -26,7 +26,7 @@ export class ArticleAPI extends BaseAPI {
   // Get single article by slug
   async getBySlug(slug: string): Promise<Article> {
     return this.handleRequest(() =>
-      this.axiosInstance.get<Article>(`/articles/${slug}`)
+      this.axiosInstance.get<Article>(`/articles/preview/${slug}`)
     );
   }
 

@@ -16,6 +16,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ArticlesSlugRouteImport } from './routes/articles.$slug'
+import { Route as ArticlesPreviewSlugRouteImport } from './routes/articles.preview.$slug'
 
 const WriteRoute = WriteRouteImport.update({
   id: '/write',
@@ -52,6 +53,11 @@ const ArticlesSlugRoute = ArticlesSlugRouteImport.update({
   path: '/articles/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ArticlesPreviewSlugRoute = ArticlesPreviewSlugRouteImport.update({
+  id: '/articles/preview/$slug',
+  path: '/articles/preview/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -61,6 +67,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/write': typeof WriteRoute
   '/articles/$slug': typeof ArticlesSlugRoute
+  '/articles/preview/$slug': typeof ArticlesPreviewSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -70,6 +77,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/write': typeof WriteRoute
   '/articles/$slug': typeof ArticlesSlugRoute
+  '/articles/preview/$slug': typeof ArticlesPreviewSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -80,6 +88,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/write': typeof WriteRoute
   '/articles/$slug': typeof ArticlesSlugRoute
+  '/articles/preview/$slug': typeof ArticlesPreviewSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -91,6 +100,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/write'
     | '/articles/$slug'
+    | '/articles/preview/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -100,6 +110,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/write'
     | '/articles/$slug'
+    | '/articles/preview/$slug'
   id:
     | '__root__'
     | '/'
@@ -109,6 +120,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/write'
     | '/articles/$slug'
+    | '/articles/preview/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -119,6 +131,7 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   WriteRoute: typeof WriteRoute
   ArticlesSlugRoute: typeof ArticlesSlugRoute
+  ArticlesPreviewSlugRoute: typeof ArticlesPreviewSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -172,6 +185,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ArticlesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/articles/preview/$slug': {
+      id: '/articles/preview/$slug'
+      path: '/articles/preview/$slug'
+      fullPath: '/articles/preview/$slug'
+      preLoaderRoute: typeof ArticlesPreviewSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -183,6 +203,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   WriteRoute: WriteRoute,
   ArticlesSlugRoute: ArticlesSlugRoute,
+  ArticlesPreviewSlugRoute: ArticlesPreviewSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
