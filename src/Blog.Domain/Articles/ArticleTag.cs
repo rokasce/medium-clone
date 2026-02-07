@@ -1,5 +1,4 @@
 using Blog.Domain.Abstractions;
-using Blog.Domain.Articles.ValueObjects;
 
 namespace Blog.Domain.Articles;
 
@@ -7,7 +6,7 @@ public sealed class ArticleTag : Entity
 {
     private ArticleTag() { } // EF Core
 
-    internal ArticleTag(Guid articleId, TagId tagId)
+    internal ArticleTag(Guid articleId, Guid tagId)
     {
         ArticleId = articleId;
         TagId = tagId;
@@ -15,7 +14,7 @@ public sealed class ArticleTag : Entity
     }
 
     public Guid ArticleId { get; private set; }
-    public TagId TagId { get; private set; }
+    public Guid TagId { get; private set; }
     public DateTime AddedAt { get; private set; }
 
     // Navigation properties

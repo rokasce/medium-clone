@@ -60,7 +60,8 @@ namespace Blog.Infrastructure.Persistance.Migrations
                         .HasDefaultValue(0)
                         .HasColumnName("view_count");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_article_statistics");
 
                     b.HasIndex("ArticleId")
                         .IsUnique()
@@ -131,7 +132,8 @@ namespace Blog.Infrastructure.Persistance.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_articles");
 
                     b.HasIndex("AuthorId")
                         .HasDatabaseName("ix_articles_author_id");
@@ -181,14 +183,15 @@ namespace Blog.Infrastructure.Persistance.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("version");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_article_revisions");
 
                     b.HasIndex("ArticleId")
                         .HasDatabaseName("ix_article_revisions_article_id");
 
                     b.HasIndex("ArticleId", "Version")
                         .IsUnique()
-                        .HasDatabaseName("ix_article_revisions_article_version");
+                        .HasDatabaseName("ix_article_revisions_article_id_version");
 
                     b.ToTable("article_revisions", (string)null);
                 });
@@ -208,14 +211,16 @@ namespace Blog.Infrastructure.Persistance.Migrations
                         .HasColumnName("added_at");
 
                     b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
-                    b.HasKey("ArticleId", "TagId");
+                    b.HasKey("ArticleId", "TagId")
+                        .HasName("pk_article_tag");
 
                     b.HasIndex("TagId")
-                        .HasDatabaseName("ix_article_tags_tag_id");
+                        .HasDatabaseName("ix_article_tag_tag_id");
 
-                    b.ToTable("article_tags", (string)null);
+                    b.ToTable("article_tag", (string)null);
                 });
 
             modelBuilder.Entity("Blog.Domain.Articles.Tag", b =>
@@ -242,7 +247,8 @@ namespace Blog.Infrastructure.Persistance.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("slug");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_tags");
 
                     b.HasIndex("Slug")
                         .IsUnique()
@@ -255,211 +261,274 @@ namespace Blog.Infrastructure.Persistance.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<Guid>("ArticleId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("article_id");
 
                     b.Property<Guid>("AuthorId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("author_id");
 
                     b.Property<Guid>("PublicationId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("publication_id");
 
                     b.Property<string>("ReviewNotes")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("review_notes");
 
                     b.Property<DateTime?>("ReviewedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("reviewed_at");
 
                     b.Property<Guid?>("ReviewedByEditorId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("reviewed_by_editor_id");
 
                     b.Property<int>("Status")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
 
                     b.Property<DateTime>("SubmittedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("submitted_at");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_article_submission");
 
-                    b.HasIndex("ArticleId");
+                    b.HasIndex("ArticleId")
+                        .HasDatabaseName("ix_article_submission_article_id");
 
-                    b.HasIndex("AuthorId");
+                    b.HasIndex("AuthorId")
+                        .HasDatabaseName("ix_article_submission_author_id");
 
-                    b.HasIndex("PublicationId");
+                    b.HasIndex("PublicationId")
+                        .HasDatabaseName("ix_article_submission_publication_id");
 
-                    b.HasIndex("ReviewedByEditorId");
+                    b.HasIndex("ReviewedByEditorId")
+                        .HasDatabaseName("ix_article_submission_reviewed_by_editor_id");
 
-                    b.ToTable("ArticleSubmission");
+                    b.ToTable("article_submission", (string)null);
                 });
 
             modelBuilder.Entity("Blog.Domain.Publications.Publication", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("description");
 
                     b.Property<int>("FollowerCount")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("follower_count");
 
                     b.Property<string>("LogoUrl")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("logo_url");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("name");
 
                     b.Property<Guid>("OwnerId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("owner_id");
 
                     b.Property<string>("Slug")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("slug");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_publication");
 
-                    b.HasIndex("OwnerId");
+                    b.HasIndex("OwnerId")
+                        .HasDatabaseName("ix_publication_owner_id");
 
-                    b.ToTable("Publication");
+                    b.ToTable("publication", (string)null);
                 });
 
             modelBuilder.Entity("Blog.Domain.Publications.PublicationEditor", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<DateTime>("AddedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("added_at");
 
                     b.Property<Guid>("PublicationId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("publication_id");
 
                     b.Property<int>("Role")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("role");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_publication_editor");
 
-                    b.HasIndex("PublicationId");
+                    b.HasIndex("PublicationId")
+                        .HasDatabaseName("ix_publication_editor_publication_id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_publication_editor_user_id");
 
-                    b.ToTable("PublicationEditor");
+                    b.ToTable("publication_editor", (string)null);
                 });
 
             modelBuilder.Entity("Blog.Domain.Users.Author", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<int>("ArticleCount")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("article_count");
 
                     b.Property<int>("FollowerCount")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("follower_count");
 
                     b.Property<int>("TotalClaps")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("total_claps");
 
                     b.Property<int>("TotalViews")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("total_views");
 
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_author");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_author_user_id");
 
-                    b.ToTable("Author");
+                    b.ToTable("author", (string)null);
                 });
 
             modelBuilder.Entity("Blog.Domain.Users.AuthorBadge", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<Guid>("AuthorId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("author_id");
 
                     b.Property<DateTime>("AwardedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("awarded_at");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("description");
 
                     b.Property<string>("IconUrl")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("icon_url");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("name");
 
                     b.Property<int>("Type")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("type");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_author_badge");
 
-                    b.HasIndex("AuthorId");
+                    b.HasIndex("AuthorId")
+                        .HasDatabaseName("ix_author_badge_author_id");
 
-                    b.ToTable("AuthorBadge");
+                    b.ToTable("author_badge", (string)null);
                 });
 
             modelBuilder.Entity("Blog.Domain.Users.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
 
                     b.Property<string>("AvatarUrl")
-                        .HasColumnType("text");
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("avatar_url");
 
                     b.Property<string>("Bio")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("bio");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
                     b.Property<string>("DisplayName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("display_name");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("email");
 
                     b.Property<string>("IdentityId")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("identity_id");
 
                     b.Property<bool>("IsVerified")
-                        .HasColumnType("boolean");
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_verified");
 
                     b.Property<DateTime?>("LastActiveAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_active_at");
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("username");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_user");
 
-                    b.ToTable("User");
+                    b.ToTable("user", (string)null);
                 });
 
             modelBuilder.Entity("Blog.Domain.Articles.Article", b =>
@@ -468,11 +537,13 @@ namespace Blog.Infrastructure.Persistance.Migrations
                         .WithMany("Articles")
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_articles_author_author_id");
 
                     b.HasOne("Blog.Domain.Publications.Publication", "Publication")
                         .WithMany("Articles")
-                        .HasForeignKey("PublicationId");
+                        .HasForeignKey("PublicationId")
+                        .HasConstraintName("fk_articles_publication_publication_id");
 
                     b.Navigation("Author");
 
@@ -485,7 +556,8 @@ namespace Blog.Infrastructure.Persistance.Migrations
                         .WithMany("Revisions")
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_article_revisions_articles_article_id");
 
                     b.Navigation("Article");
                 });
@@ -496,13 +568,15 @@ namespace Blog.Infrastructure.Persistance.Migrations
                         .WithMany("Tags")
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_article_tag_articles_article_id");
 
                     b.HasOne("Blog.Domain.Articles.Tag", "Tag")
                         .WithMany()
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_article_tag_tags_tag_id");
 
                     b.Navigation("Article");
 
@@ -515,23 +589,27 @@ namespace Blog.Infrastructure.Persistance.Migrations
                         .WithMany()
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_article_submission_articles_article_id");
 
                     b.HasOne("Blog.Domain.Users.Author", "Author")
                         .WithMany()
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_article_submission_author_author_id");
 
                     b.HasOne("Blog.Domain.Publications.Publication", "Publication")
                         .WithMany("Submissions")
                         .HasForeignKey("PublicationId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_article_submission_publication_publication_id");
 
                     b.HasOne("Blog.Domain.Users.User", "ReviewedByEditor")
                         .WithMany()
-                        .HasForeignKey("ReviewedByEditorId");
+                        .HasForeignKey("ReviewedByEditorId")
+                        .HasConstraintName("fk_article_submission_user_reviewed_by_editor_id");
 
                     b.Navigation("Article");
 
@@ -548,7 +626,8 @@ namespace Blog.Infrastructure.Persistance.Migrations
                         .WithMany()
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_publication_user_owner_id");
 
                     b.Navigation("Owner");
                 });
@@ -559,13 +638,15 @@ namespace Blog.Infrastructure.Persistance.Migrations
                         .WithMany("Editors")
                         .HasForeignKey("PublicationId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_publication_editor_publication_publication_id");
 
                     b.HasOne("Blog.Domain.Users.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_publication_editor_user_user_id");
 
                     b.Navigation("Publication");
 
@@ -578,7 +659,8 @@ namespace Blog.Infrastructure.Persistance.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_author_user_user_id");
 
                     b.Navigation("User");
                 });
@@ -589,7 +671,8 @@ namespace Blog.Infrastructure.Persistance.Migrations
                         .WithMany("Badges")
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_author_badge_author_author_id");
 
                     b.Navigation("Author");
                 });

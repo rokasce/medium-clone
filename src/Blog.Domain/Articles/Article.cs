@@ -3,9 +3,7 @@ using Blog.Domain.Articles.Events;
 using Blog.Domain.Articles.ValueObjects;
 using Blog.Domain.Common.ValueObjects;
 using Blog.Domain.Publications;
-using Blog.Domain.Publications.ValueObjects;
 using Blog.Domain.Users;
-using Blog.Domain.Users.ValueObjects;
 
 namespace Blog.Domain.Articles;
 
@@ -15,7 +13,7 @@ public sealed class Article : Entity
 
     private Article(
         Guid id,
-        AuthorId authorId,
+        Guid authorId,
         string title,
         Slug slug,
         string subtitle,
@@ -34,8 +32,8 @@ public sealed class Article : Entity
     private readonly List<ArticleTag> _tags = new();
     private readonly List<ArticleRevision> _revisions = new();
 
-    public AuthorId AuthorId { get; private set; }
-    public PublicationId? PublicationId { get; private set; }
+    public Guid AuthorId { get; private set; }
+    public Guid? PublicationId { get; private set; }
     public string Title { get; private set; } = string.Empty;
     public Slug Slug { get; private set; }
     public string Subtitle { get; private set; } = string.Empty;
@@ -57,7 +55,7 @@ public sealed class Article : Entity
     // ========== FACTORY METHODS ==========
 
     public static Result<Article> CreateDraft(
-        AuthorId authorId,
+        Guid authorId,
         string title,
         string slug,
         string subtitle,
@@ -212,7 +210,7 @@ public sealed class Article : Entity
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public void AddTag(TagId tagId)
+    public void AddTag(Guid tagId)
     {
         if (_tags.Any(t => t.TagId == tagId))
         {
@@ -225,7 +223,7 @@ public sealed class Article : Entity
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public void RemoveTag(TagId tagId)
+    public void RemoveTag(Guid tagId)
     {
         var tag = _tags.FirstOrDefault(t => t.TagId == tagId);
         if (tag is not null)
@@ -235,7 +233,7 @@ public sealed class Article : Entity
         }
     }
 
-    public void UpdateTags(IEnumerable<TagId> tagIds)
+    public void UpdateTags(IEnumerable<Guid> tagIds)
     {
         _tags.Clear();
 
@@ -253,7 +251,7 @@ public sealed class Article : Entity
         });
     }
 
-    public void SubmitToPublication(PublicationId publicationId)
+    public void SubmitToPublication(Guid publicationId)
     {
         if (Status != ArticleStatus.Published)
         {
@@ -269,7 +267,7 @@ public sealed class Article : Entity
         });
     }
 
-    public void AssignToPublication(PublicationId publicationId)
+    public void AssignToPublication(Guid publicationId)
     {
         PublicationId = publicationId;
         UpdatedAt = DateTime.UtcNow;
