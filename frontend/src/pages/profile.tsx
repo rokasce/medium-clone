@@ -1,12 +1,28 @@
 import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/shared/components/ui';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+  Separator,
+} from '@/shared/components/ui';
 import { Link } from '@tanstack/react-router';
 import { useAuth } from '@/features';
-import { useMyArticles } from '@/features/articles/hooks';
+import {
+  useMyArticles,
+  useDeleteArticle,
+  useUnpublishArticle,
+} from '@/features/articles/hooks';
 import type { ArticleSummary } from '@/types';
-import { Edit3, FileText } from 'lucide-react';
+import { Edit3, FileText, Trash2, EyeOff } from 'lucide-react';
+import { toast } from 'sonner';
 
 type ProfileTab = 'published' | 'drafts' | 'about';
 
@@ -18,7 +34,10 @@ export function Profile() {
 
   const publishedArticles =
     myArticles?.filter((a) => a.status === 'Published') ?? [];
-  const draftArticles = myArticles?.filter((a) => a.status === 'Draft') ?? [];
+  const draftArticles =
+    myArticles?.filter(
+      (a) => a.status === 'Draft' || a.status === 'Unpublished'
+    ) ?? [];
 
   const tabs: { id: ProfileTab; label: string; count?: number }[] = [
     { id: 'published', label: 'Published', count: publishedArticles.length },
@@ -146,6 +165,31 @@ function ArticleList({
   emptyAction: React.ReactNode;
   isDraft?: boolean;
 }) {
+  const { mutate: deleteArticle } = useDeleteArticle();
+  const { mutate: unpublishArticle } = useUnpublishArticle();
+
+  const handleDelete = (article: ArticleSummary) => {
+    deleteArticle(article.id, {
+      onSuccess: () => {
+        toast.success('Article deleted successfully');
+      },
+      onError: () => {
+        toast.error('Failed to delete article');
+      },
+    });
+  };
+
+  const handleUnpublish = (article: ArticleSummary) => {
+    unpublishArticle(article.id, {
+      onSuccess: () => {
+        toast.success('Article unpublished successfully');
+      },
+      onError: () => {
+        toast.error('Failed to unpublish article');
+      },
+    });
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-8">
@@ -233,18 +277,73 @@ function ArticleList({
               </div>
             )}
 
-            {isDraft && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="shrink-0 self-center"
-                asChild
-              >
-                <Link to="/articles/edit/$slug" params={{ slug: article.slug }}>
-                  <Edit3 className="h-4 w-4" />
-                </Link>
-              </Button>
-            )}
+            <div className="flex gap-1 shrink-0 self-center">
+              {isDraft && (
+                <Button variant="ghost" size="icon" asChild>
+                  <Link
+                    to="/articles/edit/$slug"
+                    params={{ slug: article.slug }}
+                  >
+                    <Edit3 className="h-4 w-4" />
+                  </Link>
+                </Button>
+              )}
+
+              {!isDraft && (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <EyeOff className="h-4 w-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Unpublish article?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will unpublish "{article.title || 'Untitled'}". It
+                        will be moved to your drafts and no longer visible to
+                        others.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => handleUnpublish(article)}>
+                        Unpublish
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
+
+              {isDraft && (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete article?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will permanently delete "
+                        {article.title || 'Untitled'}". This action cannot be
+                        undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => handleDelete(article)}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      >
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
+            </div>
           </div>
         </article>
       ))}

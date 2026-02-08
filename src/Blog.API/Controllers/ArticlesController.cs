@@ -5,6 +5,7 @@ using Blog.Application.Articles.GetMyArticles;
 using Blog.Application.Articles.GetPublishedArticle;
 using Blog.Application.Articles.GetPublishedArticles;
 using Blog.Application.Articles.PublishArticleCommand;
+using Blog.Application.Articles.UnpublishArticle;
 using Blog.Application.Articles.UpdateArticle;
 using Blog.Application.Common.Pagination;
 using MediatR;
@@ -175,6 +176,43 @@ public sealed class ArticlesController : ApiControllerBase
             {
                 "Article.NotFound" => NotFound(new ErrorResponse(result.Error.Code, result.Error.Message)),
                 "Article.Unauthorized" => Forbid(),
+                _ => BadRequest(new ErrorResponse(result.Error.Code, result.Error.Message))
+            };
+        }
+
+        return Ok();
+    }
+
+    [Authorize]
+    [HttpPost("{id:guid}/unpublish")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Unpublish(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        var identityId = GetCurrentIdentityId();
+
+        if (identityId is null) return Unauthorized();
+
+        var command = new UnpublishArticleCommand
+        {
+            ArticleId = id,
+            IdentityId = identityId
+        };
+
+        var result = await _sender.Send(command, cancellationToken);
+
+        if (result.IsFailure)
+        {
+            return result.Error.Code switch
+            {
+                "Article.NotFound" => NotFound(new ErrorResponse(result.Error.Code, result.Error.Message)),
+                "Article.Unauthorized" => Forbid(),
+                "Article.NotPublished" => BadRequest(new ErrorResponse(result.Error.Code, result.Error.Message)),
                 _ => BadRequest(new ErrorResponse(result.Error.Code, result.Error.Message))
             };
         }
