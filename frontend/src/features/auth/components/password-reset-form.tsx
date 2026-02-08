@@ -37,7 +37,6 @@ export function PasswordResetForm() {
   const onSubmit = async (data: PasswordResetFormData) => {
     setIsSubmitting(true);
     // TODO: Implement password reset API call
-    console.log('Password reset requested for:', data.email);
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setIsSubmitting(false);

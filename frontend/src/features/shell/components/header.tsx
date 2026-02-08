@@ -1,4 +1,5 @@
-import { PenSquare } from 'lucide-react';
+import { useState } from 'react';
+import { PenSquare, Search, X } from 'lucide-react';
 import { useAuth } from '@/features/auth/hooks';
 import { SearchInput } from '@/features/search';
 import {
@@ -19,6 +20,7 @@ import { Link, useNavigate } from '@tanstack/react-router';
 export function Header() {
   const navigate = useNavigate();
   const { isAuthenticated, logout, user: currentUser } = useAuth();
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
   const handleSignOut = () => {
     logout();
@@ -29,16 +31,39 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-8">
-          <Link to="/" className="text-2xl font-serif text-foreground">
-            Medium
-          </Link>
+          {mobileSearchOpen ? (
+            <div className="flex items-center gap-2 md:hidden">
+              <SearchInput />
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setMobileSearchOpen(false)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          ) : (
+            <>
+              <Link to="/" className="text-2xl font-serif text-foreground">
+                Medium
+              </Link>
 
-          <div className="hidden md:flex">
-            <SearchInput />
-          </div>
+              <div className="hidden md:flex">
+                <SearchInput />
+              </div>
+            </>
+          )}
         </div>
 
-        <nav className="flex items-center gap-4">
+        <nav className={`flex items-center gap-4 ${mobileSearchOpen ? 'hidden md:flex' : ''}`}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={() => setMobileSearchOpen(true)}
+          >
+            <Search className="h-4 w-4" />
+          </Button>
           {isAuthenticated ? (
             <>
               <Link to="/write">
