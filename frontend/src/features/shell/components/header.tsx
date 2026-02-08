@@ -1,6 +1,6 @@
-import { Search, PenSquare } from 'lucide-react';
+import { PenSquare } from 'lucide-react';
 import { useAuth } from '@/features/auth/hooks';
-import { Input } from '@/components/ui/input';
+import { SearchInput } from '@/features/search';
 import {
   Avatar,
   AvatarFallback,
@@ -33,13 +33,8 @@ export function Header() {
             Medium
           </Link>
 
-          <div className="hidden md:flex relative w-64">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search"
-              className="pl-10 bg-input-background border-border"
-            />
+          <div className="hidden md:flex">
+            <SearchInput />
           </div>
         </div>
 

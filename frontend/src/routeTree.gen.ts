@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WriteRouteImport } from './routes/write'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as SearchRouteImport } from './routes/search'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
@@ -27,6 +28,11 @@ const WriteRoute = WriteRouteImport.update({
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileRoute = ProfileRouteImport.update({
@@ -70,6 +76,7 @@ export interface FileRoutesByFullPath {
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/profile': typeof ProfileRoute
+  '/search': typeof SearchRoute
   '/signup': typeof SignupRoute
   '/write': typeof WriteRoute
   '/articles/$slug': typeof ArticlesSlugRoute
@@ -81,6 +88,7 @@ export interface FileRoutesByTo {
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/profile': typeof ProfileRoute
+  '/search': typeof SearchRoute
   '/signup': typeof SignupRoute
   '/write': typeof WriteRoute
   '/articles/$slug': typeof ArticlesSlugRoute
@@ -93,6 +101,7 @@ export interface FileRoutesById {
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/profile': typeof ProfileRoute
+  '/search': typeof SearchRoute
   '/signup': typeof SignupRoute
   '/write': typeof WriteRoute
   '/articles/$slug': typeof ArticlesSlugRoute
@@ -106,6 +115,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/profile'
+    | '/search'
     | '/signup'
     | '/write'
     | '/articles/$slug'
@@ -117,6 +127,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/profile'
+    | '/search'
     | '/signup'
     | '/write'
     | '/articles/$slug'
@@ -128,6 +139,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/profile'
+    | '/search'
     | '/signup'
     | '/write'
     | '/articles/$slug'
@@ -140,6 +152,7 @@ export interface RootRouteChildren {
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
   ProfileRoute: typeof ProfileRoute
+  SearchRoute: typeof SearchRoute
   SignupRoute: typeof SignupRoute
   WriteRoute: typeof WriteRoute
   ArticlesSlugRoute: typeof ArticlesSlugRoute
@@ -161,6 +174,13 @@ declare module '@tanstack/react-router' {
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile': {
@@ -220,6 +240,7 @@ const rootRouteChildren: RootRouteChildren = {
   ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
   ProfileRoute: ProfileRoute,
+  SearchRoute: SearchRoute,
   SignupRoute: SignupRoute,
   WriteRoute: WriteRoute,
   ArticlesSlugRoute: ArticlesSlugRoute,

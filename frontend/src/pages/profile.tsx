@@ -307,7 +307,9 @@ function ArticleList({
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => handleUnpublish(article)}>
+                      <AlertDialogAction
+                        onClick={() => handleUnpublish(article)}
+                      >
                         Unpublish
                       </AlertDialogAction>
                     </AlertDialogFooter>
