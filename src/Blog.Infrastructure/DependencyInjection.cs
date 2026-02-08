@@ -46,6 +46,7 @@ public static class DependencyInjection
 
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
 
+        services.AddScoped<IArticleClapRepository, ArticleClapRepository>();
         services.AddScoped<IArticleRepository, ArticleRepository>();
         services.AddScoped<IAuthorRepository, AuthorRepository>();
         services.AddScoped<ICommentRepository, CommentRepository>();

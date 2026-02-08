@@ -15,6 +15,7 @@ public sealed record ArticleResponse(
     int ReadingTimeMinutes,
     DateTime CreatedAt,
     DateTime? PublishedAt,
+    int ClapCount,
     AuthorResponse Author,
     List<TagResponse> Tags);
 

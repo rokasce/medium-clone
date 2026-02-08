@@ -11,15 +11,18 @@ internal sealed class GetArticleBySlugQueryHandler
     private readonly IArticleRepository _articleRepository;
     private readonly IUserRepository _userRepository;
     private readonly IAuthorRepository _authorRepository;
+    private readonly IArticleClapRepository _clapRepository;
 
     public GetArticleBySlugQueryHandler(
         IArticleRepository articleRepository,
         IUserRepository userRepository,
-        IAuthorRepository authorRepository)
+        IAuthorRepository authorRepository,
+        IArticleClapRepository clapRepository)
     {
         _articleRepository = articleRepository;
         _userRepository = userRepository;
         _authorRepository = authorRepository;
+        _clapRepository = clapRepository;
     }
 
     public async Task<Result<ArticleResponse>> Handle(
@@ -53,6 +56,8 @@ internal sealed class GetArticleBySlugQueryHandler
             return Result.Failure<ArticleResponse>(ArticleErrors.Unauthorized);
         }
 
+        var clapCount = await _clapRepository.GetTotalClapsForArticleAsync(article.Id, cancellationToken);
+
         var tags = article.Tags
             .Select(at => new TagResponse(at.Tag.Id, at.Tag.Name, at.Tag.Slug))
             .ToList();
@@ -67,6 +72,7 @@ internal sealed class GetArticleBySlugQueryHandler
             article.ReadingTimeMinutes,
             article.CreatedAt,
             article.PublishedAt,
+            clapCount,
             new AuthorResponse(
                 author.Id,
                 user.Username,

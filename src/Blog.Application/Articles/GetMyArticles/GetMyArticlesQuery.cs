@@ -16,6 +16,7 @@ public sealed record ArticleSummaryResponse(
     DateTime CreatedAt,
     DateTime? PublishedAt,
     DateTime? UpdatedAt,
+    int ClapCount,
     List<TagSummaryResponse> Tags);
 
 public sealed record TagSummaryResponse(

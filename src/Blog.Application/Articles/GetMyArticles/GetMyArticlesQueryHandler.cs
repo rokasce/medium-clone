@@ -11,15 +11,18 @@ internal sealed class GetMyArticlesQueryHandler
     private readonly IArticleRepository _articleRepository;
     private readonly IUserRepository _userRepository;
     private readonly IAuthorRepository _authorRepository;
+    private readonly IArticleClapRepository _clapRepository;
 
     public GetMyArticlesQueryHandler(
         IArticleRepository articleRepository,
         IUserRepository userRepository,
-        IAuthorRepository authorRepository)
+        IAuthorRepository authorRepository,
+        IArticleClapRepository clapRepository)
     {
         _articleRepository = articleRepository;
         _userRepository = userRepository;
         _authorRepository = authorRepository;
+        _clapRepository = clapRepository;
     }
 
     public async Task<Result<List<ArticleSummaryResponse>>> Handle(
@@ -43,6 +46,9 @@ internal sealed class GetMyArticlesQueryHandler
 
         var articles = await _articleRepository.GetByAuthorIdAsync(author.Id, cancellationToken);
 
+        var articleIds = articles.Select(a => a.Id).ToList();
+        var clapCounts = await _clapRepository.GetTotalClapsForArticlesAsync(articleIds, cancellationToken);
+
         var response = articles
             .OrderByDescending(a => a.UpdatedAt ?? a.CreatedAt)
             .Select(a => new ArticleSummaryResponse(
@@ -56,6 +62,7 @@ internal sealed class GetMyArticlesQueryHandler
                 a.CreatedAt,
                 a.PublishedAt,
                 a.UpdatedAt,
+                clapCounts.GetValueOrDefault(a.Id, 0),
                 a.Tags.Select(t => new TagSummaryResponse(t.Tag.Id, t.Tag.Name, t.Tag.Slug)).ToList()))
             .ToList();
 

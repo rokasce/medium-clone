@@ -1,6 +1,8 @@
+using Blog.Application.Articles.ClapArticle;
 using Blog.Application.Articles.CreateArticleDraft;
 using Blog.Application.Articles.DeleteArticle;
 using Blog.Application.Articles.GetArticleBySlug;
+using Blog.Application.Articles.GetArticleClaps;
 using Blog.Application.Articles.GetMyArticles;
 using Blog.Application.Articles.GetPublishedArticle;
 using Blog.Application.Articles.GetPublishedArticles;
@@ -296,6 +298,62 @@ public sealed class ArticlesController : ApiControllerBase
 
         return NoContent();
     }
+
+    [HttpGet("{id:guid}/claps")]
+    [ProducesResponseType(typeof(ArticleClapsResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetClaps(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        var identityId = GetCurrentIdentityId();
+
+        var query = new GetArticleClapsQuery(id, identityId);
+        var result = await _sender.Send(query, cancellationToken);
+
+        if (result.IsFailure)
+        {
+            return NotFound(new ErrorResponse(result.Error.Code, result.Error.Message));
+        }
+
+        return Ok(result.Value);
+    }
+
+    [Authorize]
+    [HttpPost("{id:guid}/claps")]
+    [ProducesResponseType(typeof(ClapArticleResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Clap(
+        Guid id,
+        [FromBody] ClapRequest request,
+        CancellationToken cancellationToken)
+    {
+        var identityId = GetCurrentIdentityId();
+
+        if (identityId is null) return Unauthorized();
+
+        var command = new ClapArticleCommand
+        {
+            ArticleId = id,
+            IdentityId = identityId,
+            ClapCount = request.Count
+        };
+
+        var result = await _sender.Send(command, cancellationToken);
+
+        if (result.IsFailure)
+        {
+            return result.Error.Code switch
+            {
+                "Article.NotFound" => NotFound(new ErrorResponse(result.Error.Code, result.Error.Message)),
+                _ => BadRequest(new ErrorResponse(result.Error.Code, result.Error.Message))
+            };
+        }
+
+        return Ok(result.Value);
+    }
 }
 
 // DTOs
@@ -313,5 +371,7 @@ public sealed record UpdateArticleRequest(
     List<string> Tags);
 
 public sealed record CreateArticleResponse(Guid Id, string Slug);
+
+public sealed record ClapRequest(int Count);
 
 public sealed record ErrorResponse(string Code, string Message);

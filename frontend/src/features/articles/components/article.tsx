@@ -13,12 +13,13 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { HtmlRenderer } from './html-renderer';
-import { usePublishArticle } from '../hooks';
+import { usePublishArticle, useClapArticle } from '../hooks';
 
 export function Article({ article }: { article: IArticle }) {
   const router = useRouter();
   const { mutate: publishArticle, isPending: isPublishing } =
     usePublishArticle();
+  const { mutate: clapArticle } = useClapArticle();
 
   const isDraft = article?.status === 'Draft';
 
@@ -112,10 +113,12 @@ export function Article({ article }: { article: IArticle }) {
               variant="ghost"
               size="sm"
               className="gap-2"
-              onClick={() => {}}
+              onClick={() => clapArticle({ id: article.id })}
             >
-              <ThumbsUp className="h-4 w-4" />
-              {article.isClapped ? article.clapsCount + 1 : article.clapsCount}
+              <ThumbsUp
+                className={`h-4 w-4 ${article.isClapped ? 'fill-current' : ''}`}
+              />
+              {article.clapsCount}
             </Button>
             <Button variant="ghost" size="sm" className="gap-2">
               <MessageCircle className="h-4 w-4" />

@@ -109,9 +109,11 @@ export class ArticleAPI extends BaseAPI {
   }
 
   // Clap for an article
-  async clap(id: string): Promise<{ clapsCount: number }> {
+  async clap(id: string, count: number = 1): Promise<{ clapsCount: number }> {
     return this.handleRequest(() =>
-      this.axiosInstance.post<{ clapsCount: number }>(`/articles/${id}/clap`)
+      this.axiosInstance.post<{ clapsCount: number }>(`/articles/${id}/claps`, {
+        count,
+      })
     );
   }
 

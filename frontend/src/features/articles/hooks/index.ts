@@ -136,7 +136,8 @@ export function useClapArticle() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => articleApi.clap(id),
+    mutationFn: ({ id, count = 1 }: { id: string; count?: number }) =>
+      articleApi.clap(id, count),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.articles.all });
     },

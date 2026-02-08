@@ -18,6 +18,7 @@ public sealed record PublishedArticleResponse(
     string? FeaturedImageUrl,
     int ReadingTimeMinutes,
     DateTime PublishedAt,
+    int ClapCount,
     AuthorSummaryResponse Author,
     List<PublishedTagResponse> Tags);
 

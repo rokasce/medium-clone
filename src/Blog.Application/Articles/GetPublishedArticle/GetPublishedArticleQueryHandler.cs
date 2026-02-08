@@ -9,10 +9,14 @@ internal sealed class GetPublishedArticleQueryHandler
     : IRequestHandler<GetPublishedArticleQuery, Result<PublishedArticleDetailResponse>>
 {
     private readonly IArticleRepository _articleRepository;
+    private readonly IArticleClapRepository _clapRepository;
 
-    public GetPublishedArticleQueryHandler(IArticleRepository articleRepository)
+    public GetPublishedArticleQueryHandler(
+        IArticleRepository articleRepository,
+        IArticleClapRepository clapRepository)
     {
         _articleRepository = articleRepository;
+        _clapRepository = clapRepository;
     }
 
     public async Task<Result<PublishedArticleDetailResponse>> Handle(
@@ -25,6 +29,8 @@ internal sealed class GetPublishedArticleQueryHandler
         {
             return Result.Failure<PublishedArticleDetailResponse>(ArticleErrors.NotFound);
         }
+
+        var clapCount = await _clapRepository.GetTotalClapsForArticleAsync(article.Id, cancellationToken);
 
         var tags = article.Tags
             .Select(at => new PublishedArticleTagResponse(at.Tag.Id, at.Tag.Name, at.Tag.Slug))
@@ -39,6 +45,7 @@ internal sealed class GetPublishedArticleQueryHandler
             article.FeaturedImageUrl.HasValue ? article.FeaturedImageUrl.Value.Value : null,
             article.ReadingTimeMinutes,
             article.PublishedAt!.Value,
+            clapCount,
             new PublishedArticleAuthorResponse(
                 article.Author.Id,
                 article.Author.User.Username,
