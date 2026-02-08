@@ -1,4 +1,5 @@
 using Blog.Application.Articles.CreateArticleDraft;
+using Blog.Application.Articles.DeleteArticle;
 using Blog.Application.Articles.GetArticleBySlug;
 using Blog.Application.Articles.GetMyArticles;
 using Blog.Application.Articles.GetPublishedArticle;
@@ -221,6 +222,41 @@ public sealed class ArticlesController : ApiControllerBase
         }
 
         return Ok();
+    }
+
+    [Authorize]
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        var identityId = GetCurrentIdentityId();
+
+        if (identityId is null) return Unauthorized();
+
+        var command = new DeleteArticleCommand
+        {
+            ArticleId = id,
+            IdentityId = identityId
+        };
+
+        var result = await _sender.Send(command, cancellationToken);
+
+        if (result.IsFailure)
+        {
+            return result.Error.Code switch
+            {
+                "Article.NotFound" => NotFound(new ErrorResponse(result.Error.Code, result.Error.Message)),
+                "Article.Unauthorized" => Forbid(),
+                _ => BadRequest(new ErrorResponse(result.Error.Code, result.Error.Message))
+            };
+        }
+
+        return NoContent();
     }
 }
 
