@@ -50,13 +50,10 @@ export function PasswordResetForm() {
         <div className="bg-card rounded-lg shadow-md p-6 text-center">
           <h2 className="text-2xl font-bold mb-4">Check your email</h2>
           <p className="text-muted-foreground mb-6">
-            If an account exists with that email address, we've sent instructions
-            to reset your password.
+            If an account exists with that email address, we've sent
+            instructions to reset your password.
           </p>
-          <Link
-            to="/login"
-            className="text-blue-600 hover:underline text-sm"
-          >
+          <Link to="/login" className="text-blue-600 hover:underline text-sm">
             Return to sign in
           </Link>
         </div>
@@ -69,7 +66,8 @@ export function PasswordResetForm() {
       <div className="bg-card rounded-lg shadow-md p-6">
         <h2 className="text-2xl font-bold text-center mb-2">Reset Password</h2>
         <p className="text-muted-foreground text-center text-sm mb-6">
-          Enter your email address and we'll send you a link to reset your password.
+          Enter your email address and we'll send you a link to reset your
+          password.
         </p>
 
         <Form {...form}>
@@ -93,11 +91,7 @@ export function PasswordResetForm() {
               )}
             />
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isSubmitting}
-            >
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? 'Sending...' : 'Send Reset Link'}
             </Button>
           </form>

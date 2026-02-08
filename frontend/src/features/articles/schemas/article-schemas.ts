@@ -14,6 +14,7 @@ export const createArticleSchema = z.object({
   content: z.string().min(50, 'Content must be at least 50 characters'),
   subtitle: z.string().optional(),
   tags: z.array(tagSchema).max(5, 'Maximum 5 tags allowed').default([]),
+  featuredImageUrl: z.string().url('Must be a valid URL').optional().nullable(),
 });
 
 export const updateArticleSchema = z.object({
@@ -24,7 +25,7 @@ export const updateArticleSchema = z.object({
     .optional(),
   subtitle: z.string().optional(),
   tags: z.array(tagSchema).max(5, 'Maximum 5 tags allowed').default([]),
-  featuredImage: z.string().url('Must be a valid URL').optional().nullable(),
+  featuredImageUrl: z.string().url('Must be a valid URL').optional().nullable(),
 });
 
 export type CreateArticleInput = z.infer<typeof createArticleSchema>;

@@ -3,7 +3,14 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import type { Article as IArticle } from '@/types';
 import { Link, useRouter } from '@tanstack/react-router';
-import { Bookmark, Edit3, MessageCircle, Send, Share2, ThumbsUp } from 'lucide-react';
+import {
+  Bookmark,
+  Edit3,
+  MessageCircle,
+  Send,
+  Share2,
+  ThumbsUp,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { HtmlRenderer } from './html-renderer';
 import { usePublishArticle } from '../hooks';
@@ -19,7 +26,10 @@ export function Article({ article }: { article: IArticle }) {
     publishArticle(article.id, {
       onSuccess: () => {
         toast.success('Article published successfully!');
-        router.navigate({ to: '/articles/$slug', params: { slug: article.slug } });
+        router.navigate({
+          to: '/articles/$slug',
+          params: { slug: article.slug },
+        });
       },
       onError: (error) => {
         toast.error('Failed to publish article', {
@@ -85,11 +95,7 @@ export function Article({ article }: { article: IArticle }) {
                   Edit
                 </Link>
               </Button>
-              <Button
-                size="sm"
-                onClick={handlePublish}
-                disabled={isPublishing}
-              >
+              <Button size="sm" onClick={handlePublish} disabled={isPublishing}>
                 <Send className="h-4 w-4 mr-2" />
                 {isPublishing ? 'Publishing...' : 'Publish'}
               </Button>
@@ -128,9 +134,9 @@ export function Article({ article }: { article: IArticle }) {
         </div>
 
         {/* Featured image */}
-        {article.featuredImage && (
+        {article.featuredImageUrl && (
           <img
-            src={article.featuredImage}
+            src={article.featuredImageUrl}
             alt={article.title}
             className="w-full h-96 object-cover rounded mb-8"
           />
@@ -183,7 +189,6 @@ export function Article({ article }: { article: IArticle }) {
             </Button>
           </div>
         </div>
-
       </article>
     </div>
   );

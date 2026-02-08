@@ -30,7 +30,7 @@ export interface Article {
   title: string;
   subtitle?: string;
   content: string;
-  featuredImage?: string;
+  featuredImageUrl?: string;
   status: ArticleStatus;
   readingTimeMinutes: number;
   createdAt: string;
@@ -51,7 +51,7 @@ export interface ArticleSummary {
   slug: string;
   title: string;
   subtitle?: string;
-  featuredImage?: string;
+  featuredImageUrl?: string;
   status: ArticleStatus;
   readingTimeMinutes: number;
   createdAt: string;

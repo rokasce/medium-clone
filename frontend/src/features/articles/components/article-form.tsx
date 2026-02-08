@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EditorContent } from '@tiptap/react';
 import { useRouter } from '@tanstack/react-router';
 import { toast } from 'sonner';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, Loader2, ImageIcon } from 'lucide-react';
 import { RichTextEditorMenuBar } from './rte-menu-bar';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useRichTextEditor } from '../hooks/use-rich-text-editor';
 import { useCreateArticle, useUpdateArticle } from '../hooks';
+import { imageApi } from '../api/image-api';
 import type { Article } from '@/types';
 import {
   createArticleSchema,
@@ -50,6 +51,8 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [tagInput, setTagInput] = useState('');
   const [tagError, setTagError] = useState<string | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<CreateArticleInput>({
     resolver: zodResolver(createArticleSchema),
@@ -57,6 +60,45 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
   });
 
   const tags = useWatch({ control: form.control, name: 'tags' }) ?? [];
+  const featuredImageUrl = useWatch({
+    control: form.control,
+    name: 'featuredImageUrl',
+  });
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image must be less than 5MB');
+      return;
+    }
+
+    setIsUploadingImage(true);
+    try {
+      const response = await imageApi.uploadArticleImage(file);
+      form.setValue('featuredImageUrl', response.url, { shouldValidate: true });
+      toast.success('Image uploaded successfully');
+    } catch (err) {
+      toast.error('Failed to upload image');
+    } finally {
+      setIsUploadingImage(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleRemoveImage = () => {
+    form.setValue('featuredImageUrl', null, { shouldValidate: true });
+  };
 
   const handleAddTag = () => {
     const newTag = tagInput.trim().toLowerCase();
@@ -177,6 +219,58 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
           </div>
 
           <div className="space-y-2">
+            <Label>Featured Image</Label>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+            />
+            {featuredImageUrl ? (
+              <div className="relative">
+                <img
+                  src={featuredImageUrl}
+                  alt="Featured"
+                  className="w-full max-h-64 object-cover rounded-md"
+                />
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="icon"
+                  className="absolute top-2 right-2"
+                  onClick={handleRemoveImage}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploadingImage}
+                className="w-full h-32 border-2 border-dashed border-muted-foreground/25 rounded-md flex flex-col items-center justify-center gap-2 hover:border-muted-foreground/50 transition-colors disabled:opacity-50"
+              >
+                {isUploadingImage ? (
+                  <>
+                    <Loader2 className="h-8 w-8 text-muted-foreground animate-spin" />
+                    <span className="text-sm text-muted-foreground">
+                      Uploading...
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">
+                      Click to upload featured image
+                    </span>
+                  </>
+                )}
+              </button>
+            )}
+          </div>
+
+          <div className="space-y-2">
             <Label>Tags (up to 5)</Label>
 
             <div className="flex flex-wrap gap-2 mb-3">
@@ -264,7 +358,13 @@ export const CreateArticleForm: React.FC = () => {
       description="Fill in the details to create an article."
       submitLabel="Publish Article"
       submittingLabel="Publishing..."
-      defaultValues={{ title: '', subtitle: '', content: '', tags: [] }}
+      defaultValues={{
+        title: '',
+        subtitle: '',
+        content: '',
+        tags: [],
+        featuredImageUrl: null,
+      }}
       onSubmit={handleSubmit}
     />
   );
@@ -302,6 +402,7 @@ export const EditArticleForm: React.FC<EditArticleFormProps> = ({
         subtitle: article.subtitle ?? '',
         content: article.content ?? '',
         tags: article.tags?.map((tag) => tag.slug) ?? [],
+        featuredImageUrl: article.featuredImageUrl ?? null,
       }}
       onSubmit={handleSubmit}
       onError={handleError}

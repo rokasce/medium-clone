@@ -223,10 +223,10 @@ function ArticleList({
               </div>
             </Link>
 
-            {article.featuredImage && (
+            {article.featuredImageUrl && (
               <div className="hidden sm:block w-40 h-28 shrink-0">
                 <img
-                  src={article.featuredImage}
+                  src={article.featuredImageUrl}
                   alt={article.title}
                   className="w-full h-full object-cover rounded"
                 />
