@@ -3,6 +3,7 @@ using Blog.Application.Articles.GetArticleBySlug;
 using Blog.Application.Articles.GetMyArticles;
 using Blog.Application.Articles.GetPublishedArticles;
 using Blog.Application.Articles.PublishArticleCommand;
+using Blog.Application.Articles.UpdateArticle;
 using Blog.Application.Common.Pagination;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -159,6 +160,48 @@ public sealed class ArticlesController : ApiControllerBase
 
         return Ok();
     }
+
+    [Authorize]
+    [HttpPut("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Update(
+        Guid id,
+        [FromBody] UpdateArticleRequest request,
+        CancellationToken cancellationToken)
+    {
+        var identityId = GetCurrentIdentityId();
+
+        if (identityId is null) return Unauthorized();
+
+        var command = new UpdateArticleCommand
+        {
+            ArticleId = id,
+            IdentityId = identityId,
+            Title = request.Title,
+            Subtitle = request.Subtitle,
+            Content = request.Content,
+            FeaturedImageUrl = request.FeaturedImageUrl,
+            Tags = request.Tags
+        };
+
+        var result = await _sender.Send(command, cancellationToken);
+
+        if (result.IsFailure)
+        {
+            return result.Error.Code switch
+            {
+                "Article.NotFound" => NotFound(new ErrorResponse(result.Error.Code, result.Error.Message)),
+                "Article.Unauthorized" => Forbid(),
+                _ => BadRequest(new ErrorResponse(result.Error.Code, result.Error.Message))
+            };
+        }
+
+        return Ok();
+    }
 }
 
 // DTOs
@@ -166,6 +209,13 @@ public sealed record CreateArticleDraftRequest(
     string Title,
     string Subtitle,
     string Content);
+
+public sealed record UpdateArticleRequest(
+    string Title,
+    string Subtitle,
+    string Content,
+    string? FeaturedImageUrl,
+    List<string> Tags);
 
 public sealed record CreateArticleResponse(Guid Id, string Slug);
 

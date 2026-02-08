@@ -15,4 +15,10 @@ public sealed record ArticleSummaryResponse(
     int ReadingTimeMinutes,
     DateTime CreatedAt,
     DateTime? PublishedAt,
-    DateTime? UpdatedAt);
+    DateTime? UpdatedAt,
+    List<TagSummaryResponse> Tags);
+
+public sealed record TagSummaryResponse(
+    Guid Id,
+    string Name,
+    string Slug);

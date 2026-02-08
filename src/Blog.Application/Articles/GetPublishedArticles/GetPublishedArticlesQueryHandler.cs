@@ -41,7 +41,8 @@ internal sealed class GetPublishedArticlesQueryHandler
                 a.Author.Id,
                 a.Author.User.Username,
                 a.Author.User.DisplayName,
-                a.Author.User.AvatarUrl.HasValue ? a.Author.User.AvatarUrl.Value.Value : null)))
+                a.Author.User.AvatarUrl.HasValue ? a.Author.User.AvatarUrl.Value.Value : null),
+            a.Tags.Select(t => new PublishedTagResponse(t.Tag.Id, t.Tag.Name, t.Tag.Slug)).ToList()))
             .ToList();
 
         var result = new PagedResult<PublishedArticleResponse>

@@ -37,6 +37,8 @@ public sealed class ArticleRepository : Repository<Article>, IArticleRepository
         CancellationToken cancellationToken)
     {
         return await DbSet
+            .Include(a => a.Tags)
+                .ThenInclude(at => at.Tag)
             .Where(a => a.AuthorId == authorId)
             .OrderByDescending(a => a.CreatedAt)
             .ToListAsync(cancellationToken);
@@ -77,6 +79,8 @@ public sealed class ArticleRepository : Repository<Article>, IArticleRepository
         var query = DbSet
             .Include(a => a.Author)
                 .ThenInclude(author => author.User)
+            .Include(a => a.Tags)
+                .ThenInclude(at => at.Tag)
             .Where(a => a.Status == ArticleStatus.Published)
             .AsQueryable();
 

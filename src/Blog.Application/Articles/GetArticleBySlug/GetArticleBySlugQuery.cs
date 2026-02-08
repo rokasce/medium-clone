@@ -15,10 +15,16 @@ public sealed record ArticleResponse(
     int ReadingTimeMinutes,
     DateTime CreatedAt,
     DateTime? PublishedAt,
-    AuthorResponse Author);
+    AuthorResponse Author,
+    List<TagResponse> Tags);
 
 public sealed record AuthorResponse(
     Guid Id,
     string Username,
     string DisplayName,
     string? AvatarUrl);
+
+public sealed record TagResponse(
+    Guid Id,
+    string Name,
+    string Slug);

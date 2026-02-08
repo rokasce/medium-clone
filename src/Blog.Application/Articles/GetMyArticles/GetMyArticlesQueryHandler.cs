@@ -55,7 +55,8 @@ internal sealed class GetMyArticlesQueryHandler
                 a.ReadingTimeMinutes,
                 a.CreatedAt,
                 a.PublishedAt,
-                a.UpdatedAt))
+                a.UpdatedAt,
+                a.Tags.Select(t => new TagSummaryResponse(t.Tag.Id, t.Tag.Name, t.Tag.Slug)).ToList()))
             .ToList();
 
         return Result.Success(response);

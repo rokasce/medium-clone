@@ -18,10 +18,16 @@ public sealed record PublishedArticleResponse(
     string? FeaturedImageUrl,
     int ReadingTimeMinutes,
     DateTime PublishedAt,
-    AuthorSummaryResponse Author);
+    AuthorSummaryResponse Author,
+    List<PublishedTagResponse> Tags);
 
 public sealed record AuthorSummaryResponse(
     Guid Id,
     string Username,
     string DisplayName,
     string? AvatarUrl);
+
+public sealed record PublishedTagResponse(
+    Guid Id,
+    string Name,
+    string Slug);

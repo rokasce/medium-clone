@@ -53,6 +53,10 @@ internal sealed class GetArticleBySlugQueryHandler
             return Result.Failure<ArticleResponse>(ArticleErrors.Unauthorized);
         }
 
+        var tags = article.Tags
+            .Select(at => new TagResponse(at.Tag.Id, at.Tag.Name, at.Tag.Slug))
+            .ToList();
+
         var response = new ArticleResponse(
             article.Id,
             article.Title,
@@ -67,7 +71,8 @@ internal sealed class GetArticleBySlugQueryHandler
                 author.Id,
                 user.Username,
                 user.DisplayName,
-                user.AvatarUrl.HasValue ? user.AvatarUrl.Value.Value : null));
+                user.AvatarUrl.HasValue ? user.AvatarUrl.Value.Value : null),
+            tags);
 
         return Result.Success(response);
     }

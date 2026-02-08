@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EditorContent } from '@tiptap/react';
 import { useRouter } from '@tanstack/react-router';
 import { toast } from 'sonner';
+import { Plus, X } from 'lucide-react';
 import { RichTextEditorMenuBar } from './rte-menu-bar';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -21,6 +22,7 @@ import { useCreateArticle, useUpdateArticle } from '../hooks';
 import type { Article } from '@/types';
 import {
   createArticleSchema,
+  tagSchema,
   type CreateArticleInput,
 } from '../schemas/article-schemas';
 
@@ -46,11 +48,42 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
   onError,
 }) => {
   const [error, setError] = useState<string | null>(null);
+  const [tagInput, setTagInput] = useState('');
+  const [tagError, setTagError] = useState<string | null>(null);
 
   const form = useForm<CreateArticleInput>({
     resolver: zodResolver(createArticleSchema),
     defaultValues,
   });
+
+  const tags = useWatch({ control: form.control, name: 'tags' }) ?? [];
+
+  const handleAddTag = () => {
+    const newTag = tagInput.trim().toLowerCase();
+    setTagError(null);
+
+    if (tags.includes(newTag)) {
+      setTagError('Tag already exists');
+      return;
+    }
+
+    const result = tagSchema.safeParse(newTag);
+    if (!result.success) {
+      setTagError(result.error.errors[0]?.message ?? 'Invalid tag');
+      return;
+    }
+
+    form.setValue('tags', [...tags, newTag], { shouldValidate: true });
+    setTagInput('');
+  };
+
+  const handleRemoveTag = (tagToRemove: string) => {
+    form.setValue(
+      'tags',
+      tags.filter((tag) => tag !== tagToRemove),
+      { shouldValidate: true }
+    );
+  };
 
   const editor = useRichTextEditor({
     content: defaultValues.content,
@@ -140,6 +173,61 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
               <p className="text-sm text-red-500 mt-1">
                 {form.formState.errors.content.message}
               </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label>Tags (up to 5)</Label>
+
+            <div className="flex flex-wrap gap-2 mb-3">
+              {tags.map((tag) => (
+                <div
+                  key={tag}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-muted rounded-full"
+                >
+                  <span className="text-sm">{tag}</span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveTag(tag)}
+                    className="hover:text-destructive text-muted-foreground"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            {tags.length < 5 && (
+              <div className="space-y-2">
+                <div className="flex gap-2">
+                  <Input
+                    type="text"
+                    placeholder="Add a tag..."
+                    value={tagInput}
+                    onChange={(e) => {
+                      setTagInput(e.target.value);
+                      setTagError(null);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddTag();
+                      }
+                    }}
+                    className={`max-w-xs ${tagError ? 'border-red-500' : ''}`}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={handleAddTag}
+                    disabled={!tagInput.trim()}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+                {tagError && <p className="text-sm text-red-500">{tagError}</p>}
+              </div>
             )}
           </div>
 
