@@ -47,20 +47,25 @@ internal sealed class ClapArticleCommandHandler
             user.Id,
             cancellationToken);
 
-        if (clap is null)
+        var isNew = clap is null;
+
+        if (isNew)
         {
             clap = ArticleClap.Create(request.ArticleId, user.Id);
-            await _clapRepository.AddAsync(clap, cancellationToken);
         }
 
-        var result = clap.AddClaps(request.ClapCount);
+        var result = clap!.AddClaps(request.ClapCount);
 
         if (result.IsFailure)
         {
             return Result.Failure<ClapArticleResponse>(result.Error);
         }
 
-        _clapRepository.Update(clap);
+        if (isNew)
+        {
+            await _clapRepository.AddAsync(clap, cancellationToken);
+        }
+
         await _clapRepository.SaveChangesAsync(cancellationToken);
 
         var totalClaps = await _clapRepository.GetTotalClapsForArticleAsync(
