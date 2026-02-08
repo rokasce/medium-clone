@@ -62,6 +62,15 @@ public sealed class CreateArticleDraftCommandHandler
 
         var article = articleResult.Value;
 
+        if (!string.IsNullOrWhiteSpace(request.FeaturedImageUrl))
+        {
+            var imageResult = article.SetFeaturedImage(request.FeaturedImageUrl);
+            if (imageResult.IsFailure)
+            {
+                return Result.Failure<CreateArticleDraftResponse>(imageResult.Error);
+            }
+        }
+
         await _articleRepository.AddAsync(article, cancellationToken);
         await _articleRepository.SaveChangesAsync(cancellationToken);
 

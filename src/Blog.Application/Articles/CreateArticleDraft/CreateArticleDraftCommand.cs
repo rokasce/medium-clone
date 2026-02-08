@@ -9,6 +9,7 @@ public sealed record CreateArticleDraftCommand : IRequest<Result<CreateArticleDr
     public required string Title { get; init; }
     public required string Subtitle { get; init; }
     public required string Content { get; init; }
+    public string? FeaturedImageUrl { get; init; }
 }
 
 public sealed record CreateArticleDraftResponse(Guid Id, string Slug);

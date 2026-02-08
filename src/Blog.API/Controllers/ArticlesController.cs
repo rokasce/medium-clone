@@ -129,7 +129,8 @@ public sealed class ArticlesController : ApiControllerBase
             IdentityId = identityId,
             Title = request.Title,
             Subtitle = request.Subtitle,
-            Content = request.Content
+            Content = request.Content,
+            FeaturedImageUrl = request.FeaturedImageUrl
         };
 
         var result = await _sender.Send(command, cancellationToken);
@@ -227,7 +228,8 @@ public sealed class ArticlesController : ApiControllerBase
 public sealed record CreateArticleDraftRequest(
     string Title,
     string Subtitle,
-    string Content);
+    string Content,
+    string? FeaturedImageUrl);
 
 public sealed record UpdateArticleRequest(
     string Title,
