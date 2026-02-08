@@ -1,10 +1,12 @@
-﻿using Blog.Application.Common.Authentication;
+﻿using Azure.Storage.Blobs;
+using Blog.Application.Common.Authentication;
 using Blog.Application.Common.Clock;
 using Blog.Application.Common.Interfaces;
 using Blog.Infrastructure.Authentication;
 using Blog.Infrastructure.Clock;
 using Blog.Infrastructure.Persistance;
 using Blog.Infrastructure.Persistance.Repositories;
+using Blog.Infrastructure.Storage;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -25,6 +27,8 @@ public static class DependencyInjection
         AddPersistence(services, configuration);
 
         AddAuthentication(services, configuration);
+
+        AddStorage(services, configuration);
 
         return services;
     }
@@ -77,6 +81,20 @@ public static class DependencyInjection
 
             httpClient.BaseAddress = new Uri(keycloakOptions.TokenUrl);
         });
+    }
+
+    private static void AddStorage(IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<AzureStorageOptions>(
+            configuration.GetSection(AzureStorageOptions.SectionName));
+
+        services.AddSingleton(sp =>
+        {
+            var options = sp.GetRequiredService<IOptions<AzureStorageOptions>>().Value;
+            return new BlobServiceClient(options.ConnectionString);
+        });
+
+        services.AddScoped<IFileStorageService, AzureBlobStorageService>();
     }
 
     public static IHost ApplyMigrations(this IHost app)
