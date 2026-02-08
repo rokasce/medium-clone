@@ -9,9 +9,12 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Docker
       ConnectionStrings__Database: "Host=db;Database=medium_clone;Username=postgres;Password=your_password"
+      AzureStorage__ConnectionString: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;"
+      AzureStorage__BaseUrl: "http://localhost:10000/devstoreaccount1"
     depends_on:
       - db
       - keycloak
+      - azurite
     networks:
       - blog-network
 
@@ -45,6 +48,19 @@ services:
     networks:
       - blog-network
 
+  azurite:
+    container_name: Blog.Storage
+    image: mcr.microsoft.com/azure-storage/azurite:3.31.0
+    ports:
+      - "10000:10000"
+      - "10001:10001"
+      - "10002:10002"
+    volumes:
+      - azurite_data:/data
+    command: "azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0"
+    networks:
+      - blog-network
+
 networks:
   blog-network:
     driver: bridge
@@ -52,3 +68,4 @@ networks:
 volumes:
   postgres_data:
   keycloak_data:
+  azurite_data:

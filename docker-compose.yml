@@ -6,6 +6,10 @@ services:
       dockerfile: src/Blog.API/Dockerfile
     depends_on:
       - blog-db
+      - azurite
+    environment:
+      - AzureStorage__ConnectionString=DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;
+      - AzureStorage__BaseUrl=http://localhost:10000/devstoreaccount1
 
   blog-db:
     image: postgres:16
@@ -32,7 +36,19 @@ services:
       - ../keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json:ro
       - keycloak_data:/opt/keycloak/data
 
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite:3.31.0
+    container_name: Blog.Storage
+    ports:
+      - 10000:10000
+      - 10001:10001
+      - 10002:10002
+    volumes:
+      - azurite_data:/data
+    command: "azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0"
+
 volumes:
   postgres_data:
   keycloak_data:
+  azurite_data:
 
