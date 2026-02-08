@@ -7,7 +7,7 @@ export const Route = createFileRoute('/articles/preview/$slug')({
   validateSearch: (search: Record<string, unknown>) => ({
     status: (search.status as ArticleStatus) || undefined,
   }),
-  loader: async ({ params }) => await articleApi.getBySlug(params.slug),
+  loader: async ({ params }) => await articleApi.previewBySlug(params.slug),
   component: RouteComponent,
 });
 

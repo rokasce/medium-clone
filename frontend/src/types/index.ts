@@ -17,6 +17,7 @@ export interface Author {
 
 // Tag entity
 export interface Tag {
+  id: string;
   slug: string;
   name: string;
   articleCount: number;
@@ -135,7 +136,7 @@ export interface PaginationParams {
 }
 
 export interface ArticleFilterParams extends PaginationParams {
-  tag?: string;
+  tagId?: string;
   author?: string;
   status?: ArticleStatus;
   search?: string;

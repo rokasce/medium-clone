@@ -3,7 +3,7 @@ import EditPage from '@/features/articles/pages/edit-page';
 import { createFileRoute, useMatch } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/articles/edit/$slug')({
-  loader: async ({ params }) => await articleApi.getBySlug(params.slug),
+  loader: async ({ params }) => await articleApi.previewBySlug(params.slug),
   component: RouteComponent,
 });
 

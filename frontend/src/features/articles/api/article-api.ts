@@ -22,8 +22,15 @@ export class ArticleAPI extends BaseAPI {
     );
   }
 
-  // Get single article by slug
+  // Get published article by slug (public)
   async getBySlug(slug: string): Promise<Article> {
+    return this.handleRequest(() =>
+      this.axiosInstance.get<Article>(`/articles/${slug}`)
+    );
+  }
+
+  // Preview article by slug (for author - includes drafts)
+  async previewBySlug(slug: string): Promise<Article> {
     return this.handleRequest(() =>
       this.axiosInstance.get<Article>(`/articles/preview/${slug}`)
     );

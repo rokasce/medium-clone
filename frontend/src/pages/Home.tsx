@@ -1,7 +1,5 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { useAuth } from '@/features/auth/hooks';
-import { useArticles } from '@/features/articles/hooks';
 import {
   Avatar,
   AvatarFallback,
@@ -9,26 +7,23 @@ import {
   Separator,
 } from '@/shared/components/ui';
 import { Link } from '@tanstack/react-router';
-import { Bookmark, PenLine } from 'lucide-react';
+import { Bookmark, PenLine, X } from 'lucide-react';
 import type { ArticleSummary } from '@/types';
+import { useHomePage } from './hooks/use-home-page';
 
 export default function Home() {
-  const { isAuthenticated, isLoading: isAuthLoading, user } = useAuth();
-  const { data: articlesData, isLoading: isArticlesLoading } = useArticles({
-    page: 1,
-    pageSize: 10,
-  });
-
-  const articles = articlesData?.items ?? [];
-
-  const trendingTags = [
-    'Programming',
-    'Web Development',
-    'React',
-    'TypeScript',
-    'Design',
-    'JavaScript',
-  ];
+  const {
+    isAuthenticated,
+    isAuthLoading,
+    user,
+    articles,
+    isArticlesLoading,
+    popularTags,
+    selectedTag,
+    selectedTagName,
+    handleTagSelect,
+    clearTagFilter,
+  } = useHomePage();
 
   if (isAuthLoading) {
     return (
@@ -75,6 +70,24 @@ export default function Home() {
                   <PenLine className="h-4 w-4" />
                   Write
                 </Link>
+              </Button>
+            </div>
+          )}
+
+          {/* Active filter indicator */}
+          {selectedTag && (
+            <div className="flex items-center gap-2 mb-6 pb-4 border-b border-border">
+              <span className="text-sm text-muted-foreground">
+                Filtering by:
+              </span>
+              <Button
+                variant="secondary"
+                size="sm"
+                className="rounded-full"
+                onClick={clearTagFilter}
+              >
+                {selectedTagName}
+                <X className="h-3 w-3 ml-1" />
               </Button>
             </div>
           )}
@@ -217,14 +230,16 @@ export default function Home() {
                 Discover more of what matters to you
               </h3>
               <div className="flex flex-wrap gap-2">
-                {trendingTags.map((tag) => (
+                {popularTags.map((tag) => (
                   <Button
-                    key={tag}
-                    variant="outline"
+                    key={tag.id}
+                    variant={selectedTag === tag.id ? 'default' : 'outline'}
                     size="sm"
                     className="rounded-full"
+                    onClick={() => handleTagSelect(tag.id)}
                   >
-                    {tag}
+                    {tag.name}
+                    {selectedTag === tag.id && <X className="h-3 w-3 ml-1" />}
                   </Button>
                 ))}
               </div>
