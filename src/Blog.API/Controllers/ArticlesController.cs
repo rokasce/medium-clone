@@ -1,6 +1,7 @@
 using Blog.Application.Articles.CreateArticleDraft;
 using Blog.Application.Articles.GetArticleBySlug;
 using Blog.Application.Articles.GetMyArticles;
+using Blog.Application.Articles.GetPublishedArticle;
 using Blog.Application.Articles.GetPublishedArticles;
 using Blog.Application.Articles.PublishArticleCommand;
 using Blog.Application.Articles.UpdateArticle;
@@ -36,6 +37,24 @@ public sealed class ArticlesController : ApiControllerBase
         if (result.IsFailure)
         {
             return BadRequest(new ErrorResponse(result.Error.Code, result.Error.Message));
+        }
+
+        return Ok(result.Value);
+    }
+
+    [HttpGet("{slug}")]
+    [ProducesResponseType(typeof(PublishedArticleDetailResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetPublishedArticle(
+        string slug,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetPublishedArticleQuery(slug);
+        var result = await _sender.Send(query, cancellationToken);
+
+        if (result.IsFailure)
+        {
+            return NotFound(new ErrorResponse(result.Error.Code, result.Error.Message));
         }
 
         return Ok(result.Value);

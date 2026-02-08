@@ -32,6 +32,18 @@ public sealed class ArticleRepository : Repository<Article>, IArticleRepository
             .FirstOrDefaultAsync(a => a.Slug == slug, cancellationToken);
     }
 
+    public async Task<Article?> GetPublishedBySlugAsync(
+        string slug,
+        CancellationToken cancellationToken)
+    {
+        return await DbSet
+            .Include(a => a.Author)
+                .ThenInclude(author => author.User)
+            .Include(a => a.Tags)
+                .ThenInclude(at => at.Tag)
+            .FirstOrDefaultAsync(a => a.Slug == slug && a.Status == ArticleStatus.Published, cancellationToken);
+    }
+
     public async Task<List<Article>> GetByAuthorIdAsync(
         Guid authorId,
         CancellationToken cancellationToken)
