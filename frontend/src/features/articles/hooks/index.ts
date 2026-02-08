@@ -5,7 +5,7 @@ import {
   useInfiniteQuery,
 } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
-import type { ArticleFilterParams } from '@/types';
+import type { Article, ArticleFilterParams } from '@/types';
 import type {
   CreateArticleInput,
   UpdateArticleInput,
@@ -138,7 +138,17 @@ export function useClapArticle() {
   return useMutation({
     mutationFn: ({ id, count = 1 }: { id: string; count?: number }) =>
       articleApi.clap(id, count),
-    onSuccess: () => {
+    onSuccess: (data, { id }) => {
+      // Update the clapCount in the cache for all article queries
+      queryClient.setQueriesData<Article>(
+        { queryKey: queryKeys.articles.all },
+        (oldData) => {
+          if (oldData && 'id' in oldData && oldData.id === id) {
+            return { ...oldData, clapCount: data.clapCount, isClapped: true };
+          }
+          return oldData;
+        }
+      );
       queryClient.invalidateQueries({ queryKey: queryKeys.articles.all });
     },
   });

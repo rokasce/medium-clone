@@ -118,7 +118,7 @@ export function Article({ article }: { article: IArticle }) {
               <ThumbsUp
                 className={`h-4 w-4 ${article.isClapped ? 'fill-current' : ''}`}
               />
-              {article.clapsCount}
+              {article.clapCount}
             </Button>
             <Button variant="ghost" size="sm" className="gap-2">
               <MessageCircle className="h-4 w-4" />

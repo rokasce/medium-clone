@@ -38,7 +38,7 @@ export interface Article {
   publishedAt?: string;
   author: Author;
   tags: Tag[];
-  clapsCount: number;
+  clapCount: number;
   commentsCount: number;
   viewsCount: number;
   isClapped?: boolean;
@@ -58,7 +58,7 @@ export interface ArticleSummary {
   publishedAt?: string;
   author: Pick<Author, 'id' | 'username' | 'image'>;
   tags: Tag[];
-  clapsCount: number;
+  clapCount: number;
   commentsCount: number;
   isClapped?: boolean;
   isBookmarked?: boolean;

@@ -261,7 +261,7 @@ function ArticleList({
                 {!isDraft && (
                   <>
                     <span>·</span>
-                    <span>{article.clapsCount} claps</span>
+                    <span>{article.clapCount} claps</span>
                   </>
                 )}
               </div>
