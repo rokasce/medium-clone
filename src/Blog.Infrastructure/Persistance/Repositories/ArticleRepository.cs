@@ -16,6 +16,7 @@ public sealed class ArticleRepository : Repository<Article>, IArticleRepository
         CancellationToken cancellationToken)
     {
         return await DbSet
+            .Include(a => a.Author)
             .Include(a => a.Tags)
                 .ThenInclude(at => at.Tag)
             .Include(a => a.Revisions)
