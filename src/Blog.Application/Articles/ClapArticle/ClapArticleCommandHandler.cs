@@ -42,6 +42,12 @@ internal sealed class ClapArticleCommandHandler
             return Result.Failure<ClapArticleResponse>(ArticleErrors.NotFound);
         }
 
+        // Users cannot clap their own articles
+        if (article.Author.UserId == user.Id)
+        {
+            return Result.Failure<ClapArticleResponse>(ArticleErrors.CannotClapOwnArticle);
+        }
+
         var clap = await _clapRepository.GetByArticleAndUserAsync(
             request.ArticleId,
             user.Id,
