@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import {
+  Bell,
   Settings,
   CheckCheck,
   ThumbsUp,
@@ -9,7 +10,7 @@ import {
   BookOpen,
 } from 'lucide-react';
 
-import { Link } from 'react-router';
+import { Link } from '@tanstack/react-router';
 import {
   Avatar,
   AvatarFallback,
@@ -21,160 +22,45 @@ import {
   TabsTrigger,
 } from '@/shared/components/ui';
 import { cn } from '@/shared/lib';
+import {
+  useNotifications,
+  useUnreadCount,
+  useMarkAsRead,
+  useMarkAllAsRead,
+} from '../hooks/use-notifications';
+import type { Notification, NotificationType } from '../types/notification';
+import { formatDistanceToNow, isToday, isYesterday } from 'date-fns';
 
-interface Notification {
-  id: string;
-  type: 'comment' | 'clap' | 'follow' | 'mention' | 'article';
-  title: string;
-  message: string;
-  timestamp: string;
-  date: string;
-  read: boolean;
-  avatar?: string;
-  authorName?: string;
-}
-
-const mockNotifications: Notification[] = [
-  {
-    id: '1',
-    type: 'clap',
-    title: 'New claps on your article',
-    message:
-      "Sarah Chen and 24 others clapped for 'The Future of Web Development: What to Expect in 2026'",
-    timestamp: '2 hours ago',
-    date: '2026-02-06',
-    read: false,
-    avatar:
-      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400',
-    authorName: 'Sarah Chen',
-  },
-  {
-    id: '2',
-    type: 'follow',
-    title: 'New follower',
-    message: 'Michael Rodriguez started following you',
-    timestamp: '5 hours ago',
-    date: '2026-02-06',
-    read: false,
-    avatar:
-      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
-    authorName: 'Michael Rodriguez',
-  },
-  {
-    id: '3',
-    type: 'comment',
-    title: 'New comment',
-    message:
-      'Emily Watson commented: "This is exactly what I needed! The section on component architecture is brilliant."',
-    timestamp: '8 hours ago',
-    date: '2026-02-06',
-    read: false,
-    avatar:
-      'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400',
-    authorName: 'Emily Watson',
-  },
-  {
-    id: '4',
-    type: 'clap',
-    title: 'New claps on your article',
-    message:
-      "David Kim and 15 others clapped for 'Building Scalable React Applications'",
-    timestamp: '1 day ago',
-    date: '2026-02-05',
-    read: false,
-    avatar:
-      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400',
-    authorName: 'David Kim',
-  },
-  {
-    id: '5',
-    type: 'mention',
-    title: 'You were mentioned',
-    message:
-      "Alexandra Martinez mentioned you in 'Design Systems: Creating Consistency at Scale'",
-    timestamp: '1 day ago',
-    date: '2026-02-05',
-    read: true,
-    avatar:
-      'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400',
-    authorName: 'Alexandra Martinez',
-  },
-  {
-    id: '6',
-    type: 'follow',
-    title: 'New follower',
-    message: 'Jessica Lee started following you',
-    timestamp: '2 days ago',
-    date: '2026-02-04',
-    read: true,
-    avatar:
-      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400',
-    authorName: 'Jessica Lee',
-  },
-  {
-    id: '7',
-    type: 'comment',
-    title: 'New comment',
-    message:
-      'Robert Zhang replied to your comment: "I agree with your perspective on this. Have you considered..."',
-    timestamp: '2 days ago',
-    date: '2026-02-04',
-    read: true,
-    avatar:
-      'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400',
-    authorName: 'Robert Zhang',
-  },
-  {
-    id: '8',
-    type: 'article',
-    title: 'Recommended for you',
-    message:
-      "Based on your reading history: 'Advanced TypeScript Patterns' by Maria Garcia",
-    timestamp: '3 days ago',
-    date: '2026-02-03',
-    read: true,
-    avatar:
-      'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400',
-    authorName: 'Maria Garcia',
-  },
-  {
-    id: '9',
-    type: 'clap',
-    title: 'New claps on your article',
-    message:
-      "James Wilson and 8 others clapped for 'The Art of Writing Clean Code'",
-    timestamp: '3 days ago',
-    date: '2026-02-03',
-    read: true,
-    avatar:
-      'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400',
-    authorName: 'James Wilson',
-  },
-  {
-    id: '10',
-    type: 'follow',
-    title: 'New follower',
-    message: 'Lisa Anderson started following you',
-    timestamp: '4 days ago',
-    date: '2026-02-02',
-    read: true,
-    avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400',
-    authorName: 'Lisa Anderson',
-  },
-];
-
-const getNotificationIcon = (type: Notification['type']) => {
+const getNotificationIcon = (type: NotificationType) => {
   switch (type) {
-    case 'clap':
+    case 'ArticleClapped':
       return <ThumbsUp className="h-5 w-5 text-green-600" />;
-    case 'follow':
+    case 'NewFollower':
       return <UserPlus className="h-5 w-5 text-blue-600" />;
-    case 'comment':
+    case 'ArticleCommented':
+    case 'CommentReplied':
       return <MessageCircle className="h-5 w-5 text-orange-600" />;
-    case 'mention':
+    case 'MentionedInComment':
       return <User className="h-5 w-5 text-purple-600" />;
-    case 'article':
+    case 'ArticlePublished':
+    case 'SubmissionApproved':
+    case 'SubmissionRejected':
       return <BookOpen className="h-5 w-5 text-zinc-600" />;
+    default:
+      return <Bell className="h-5 w-5 text-zinc-600" />;
+  }
+};
+
+const mapTabToType = (tab: string): string | undefined => {
+  switch (tab) {
+    case 'comment':
+      return 'ArticleCommented';
+    case 'clap':
+      return 'ArticleClapped';
+    case 'follow':
+      return 'NewFollower';
+    default:
+      return undefined;
   }
 };
 
@@ -182,15 +68,12 @@ const groupNotificationsByDate = (notifications: Notification[]) => {
   const groups: { [key: string]: Notification[] } = {};
 
   notifications.forEach((notification) => {
-    const today = new Date().toISOString().split('T')[0];
-    const yesterday = new Date(Date.now() - 86400000)
-      .toISOString()
-      .split('T')[0];
+    const date = new Date(notification.createdAt);
 
-    let label = notification.date;
-    if (notification.date === today) {
+    let label: string;
+    if (isToday(date)) {
       label = 'Today';
-    } else if (notification.date === yesterday) {
+    } else if (isYesterday(date)) {
       label = 'Yesterday';
     } else {
       label = 'Earlier';
@@ -206,29 +89,31 @@ const groupNotificationsByDate = (notifications: Notification[]) => {
 };
 
 export default function NotificationsPage() {
-  const [notifications, setNotifications] = useState(mockNotifications);
   const [activeTab, setActiveTab] = useState('all');
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const { data: notificationsData, isLoading } = useNotifications({
+    page: 1,
+    pageSize: 50,
+    unreadOnly: activeTab === 'unread' ? true : undefined,
+    type: mapTabToType(activeTab),
+  });
+  const { data: unreadCountData } = useUnreadCount();
+  const markAsReadMutation = useMarkAsRead();
+  const markAllAsReadMutation = useMarkAllAsRead();
 
-  const markAsRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    );
+  const notifications = notificationsData?.items ?? [];
+  const totalCount = notificationsData?.totalCount ?? 0;
+  const unreadCount = unreadCountData?.count ?? 0;
+
+  const handleMarkAsRead = (id: string) => {
+    markAsReadMutation.mutate(id);
   };
 
-  const markAllAsRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+  const handleMarkAllAsRead = () => {
+    markAllAsReadMutation.mutate();
   };
 
-  const filterNotifications = (type: string) => {
-    if (type === 'all') return notifications;
-    if (type === 'unread') return notifications.filter((n) => !n.read);
-    return notifications.filter((n) => n.type === type);
-  };
-
-  const filteredNotifications = filterNotifications(activeTab);
-  const groupedNotifications = groupNotificationsByDate(filteredNotifications);
+  const groupedNotifications = groupNotificationsByDate(notifications);
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
@@ -242,14 +127,15 @@ export default function NotificationsPage() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={markAllAsRead}
+                  onClick={handleMarkAllAsRead}
+                  disabled={markAllAsReadMutation.isPending}
                   className="gap-2"
                 >
                   <CheckCheck className="h-4 w-4" />
                   Mark all as read
                 </Button>
               )}
-              <Link to="/settings">
+              <Link to="/profile">
                 <Button variant="ghost" size="icon">
                   <Settings className="h-4 w-4" />
                 </Button>
@@ -270,9 +156,9 @@ export default function NotificationsPage() {
           <TabsList className="mb-6">
             <TabsTrigger value="all">
               All
-              {notifications.length > 0 && (
-                <span className="ml-2 text-xs bg-zinc-200 px-2 py-0.5 rounded-full">
-                  {notifications.length}
+              {totalCount > 0 && (
+                <span className="ml-2 text-xs bg-zinc-200 dark:bg-zinc-700 px-2 py-0.5 rounded-full">
+                  {totalCount}
                 </span>
               )}
             </TabsTrigger>
@@ -290,7 +176,11 @@ export default function NotificationsPage() {
           </TabsList>
 
           <TabsContent value={activeTab} className="space-y-6">
-            {Object.keys(groupedNotifications).length === 0 ? (
+            {isLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="animate-spin h-8 w-8 border-2 border-green-600 border-t-transparent rounded-full" />
+              </div>
+            ) : Object.keys(groupedNotifications).length === 0 ? (
               <div className="bg-white dark:bg-zinc-900 rounded-lg p-12 text-center">
                 <div className="mx-auto w-16 h-16 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mb-4">
                   <CheckCheck className="h-8 w-8 text-zinc-400 dark:text-zinc-500" />
@@ -312,24 +202,25 @@ export default function NotificationsPage() {
                     {notifs.map((notification) => (
                       <button
                         key={notification.id}
-                        onClick={() => markAsRead(notification.id)}
+                        onClick={() => handleMarkAsRead(notification.id)}
+                        disabled={notification.isRead}
                         className={cn(
                           'w-full text-left p-4 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors first:rounded-t-lg last:rounded-b-lg',
-                          !notification.read &&
+                          !notification.isRead &&
                             'bg-green-50/50 hover:bg-green-50/70 dark:bg-green-950/30 dark:hover:bg-green-950/50'
                         )}
                       >
                         <div className="flex gap-4">
                           <div className="shrink-0">
-                            {notification.avatar ? (
+                            {notification.actorAvatarUrl ? (
                               <div className="relative">
                                 <Avatar className="h-12 w-12">
                                   <AvatarImage
-                                    src={notification.avatar}
-                                    alt={notification.authorName}
+                                    src={notification.actorAvatarUrl}
+                                    alt={notification.actorName}
                                   />
                                   <AvatarFallback>
-                                    {notification.authorName
+                                    {notification.actorName
                                       ?.split(' ')
                                       .map((n) => n[0])
                                       .join('')}
@@ -353,9 +244,12 @@ export default function NotificationsPage() {
                               </p>
                               <div className="flex items-center gap-2 shrink-0">
                                 <span className="text-sm text-zinc-500 dark:text-zinc-400">
-                                  {notification.timestamp}
+                                  {formatDistanceToNow(
+                                    new Date(notification.createdAt),
+                                    { addSuffix: true }
+                                  )}
                                 </span>
-                                {!notification.read && (
+                                {!notification.isRead && (
                                   <div className="h-2 w-2 rounded-full bg-green-600" />
                                 )}
                               </div>

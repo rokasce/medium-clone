@@ -31,4 +31,8 @@ public static class ArticleErrors
     public static readonly Error Unauthorized = Error.Failure(
         "Article.Unauthorized",
         "You are not authorized to access this article");
+
+    public static readonly Error CannotClapOwnArticle = Error.Failure(
+        "Article.CannotClapOwnArticle",
+        "You cannot clap for your own article");
 }

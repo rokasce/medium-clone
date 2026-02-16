@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router';
+import { Link } from '@tanstack/react-router';
 import {
   Bell,
   BookOpen,
@@ -22,108 +22,55 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import {
+  useNotifications,
+  useUnreadCount,
+  useMarkAsRead,
+  useMarkAllAsRead,
+} from '../hooks/use-notifications';
+import type { NotificationType } from '../types/notification';
+import { formatDistanceToNow } from 'date-fns';
 
-interface Notification {
-  id: string;
-  type: 'comment' | 'clap' | 'follow' | 'mention' | 'article';
-  title: string;
-  message: string;
-  timestamp: string;
-  read: boolean;
-  avatar?: string;
-  authorName?: string;
-}
-
-const mockNotifications: Notification[] = [
-  {
-    id: '1',
-    type: 'clap',
-    title: 'New claps on your article',
-    message:
-      "Sarah Chen and 24 others clapped for 'The Future of Web Development'",
-    timestamp: '2 hours ago',
-    read: false,
-    avatar:
-      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400',
-    authorName: 'Sarah Chen',
-  },
-  {
-    id: '2',
-    type: 'follow',
-    title: 'New follower',
-    message: 'Michael Rodriguez started following you',
-    timestamp: '5 hours ago',
-    read: false,
-    avatar:
-      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
-    authorName: 'Michael Rodriguez',
-  },
-  {
-    id: '3',
-    type: 'comment',
-    title: 'New comment',
-    message: "Emily Watson commented on 'Building Scalable React Applications'",
-    timestamp: '1 day ago',
-    read: false,
-    avatar:
-      'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400',
-    authorName: 'Emily Watson',
-  },
-  {
-    id: '4',
-    type: 'article',
-    title: 'Recommended for you',
-    message:
-      "Check out 'Understanding TypeScript: Beyond the Basics' by David Kim",
-    timestamp: '2 days ago',
-    read: true,
-    avatar:
-      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400',
-    authorName: 'David Kim',
-  },
-  {
-    id: '5',
-    type: 'mention',
-    title: 'You were mentioned',
-    message:
-      "Alexandra Martinez mentioned you in 'Design Systems: Creating Consistency'",
-    timestamp: '3 days ago',
-    read: true,
-    avatar:
-      'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400',
-    authorName: 'Alexandra Martinez',
-  },
-];
-
-const getNotificationIcon = (type: Notification['type']) => {
+const getNotificationIcon = (type: NotificationType) => {
   switch (type) {
-    case 'clap':
+    case 'ArticleClapped':
       return <ThumbsUp className="h-4 w-4 text-green-600" />;
-    case 'follow':
+    case 'NewFollower':
       return <UserPlus className="h-4 w-4 text-blue-600" />;
-    case 'comment':
+    case 'ArticleCommented':
+    case 'CommentReplied':
       return <MessageCircle className="h-4 w-4 text-orange-600" />;
-    case 'mention':
+    case 'MentionedInComment':
       return <User className="h-4 w-4 text-purple-600" />;
-    case 'article':
+    case 'ArticlePublished':
+    case 'SubmissionApproved':
+    case 'SubmissionRejected':
       return <BookOpen className="h-4 w-4 text-zinc-600" />;
+    default:
+      return <Bell className="h-4 w-4 text-zinc-600" />;
   }
 };
 
 export function Notifications() {
-  const [notifications, setNotifications] = useState(mockNotifications);
   const [open, setOpen] = useState(false);
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const { data: notificationsData, isLoading } = useNotifications({
+    page: 1,
+    pageSize: 5,
+  });
+  const { data: unreadCountData } = useUnreadCount();
+  const markAsReadMutation = useMarkAsRead();
+  const markAllAsReadMutation = useMarkAllAsRead();
 
-  const markAsRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    );
+  const notifications = notificationsData?.items ?? [];
+  const unreadCount = unreadCountData?.count ?? 0;
+
+  const handleMarkAsRead = (id: string) => {
+    markAsReadMutation.mutate(id);
   };
 
-  const markAllAsRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+  const handleMarkAllAsRead = () => {
+    markAllAsReadMutation.mutate();
   };
 
   return (
@@ -133,7 +80,7 @@ export function Notifications() {
           <Bell className="h-5 w-5" />
           {unreadCount > 0 && (
             <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-green-600 text-white text-xs flex items-center justify-center">
-              {unreadCount}
+              {unreadCount > 9 ? '9+' : unreadCount}
             </span>
           )}
         </Button>
@@ -145,7 +92,8 @@ export function Notifications() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={markAllAsRead}
+              onClick={handleMarkAllAsRead}
+              disabled={markAllAsReadMutation.isPending}
               className="text-green-600 dark:text-green-500 hover:text-green-700 dark:hover:text-green-400 h-auto p-0"
             >
               Mark all as read
@@ -154,7 +102,11 @@ export function Notifications() {
         </div>
 
         <ScrollArea className="h-100">
-          {notifications.length === 0 ? (
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin h-6 w-6 border-2 border-green-600 border-t-transparent rounded-full" />
+            </div>
+          ) : notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <Bell className="h-12 w-12 text-zinc-300 dark:text-zinc-700 mb-4" />
               <p className="text-zinc-500 dark:text-zinc-400">
@@ -166,23 +118,24 @@ export function Notifications() {
               {notifications.map((notification) => (
                 <button
                   key={notification.id}
-                  onClick={() => markAsRead(notification.id)}
+                  onClick={() => handleMarkAsRead(notification.id)}
+                  disabled={notification.isRead}
                   className={cn(
                     'w-full text-left p-4 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors',
-                    !notification.read && 'bg-green-50/50 dark:bg-green-950/30'
+                    !notification.isRead && 'bg-green-50/50 dark:bg-green-950/30'
                   )}
                 >
                   <div className="flex gap-3">
                     <div className="shrink-0">
-                      {notification.avatar ? (
+                      {notification.actorAvatarUrl ? (
                         <div className="relative">
                           <Avatar className="h-10 w-10">
                             <AvatarImage
-                              src={notification.avatar}
-                              alt={notification.authorName}
+                              src={notification.actorAvatarUrl}
+                              alt={notification.actorName}
                             />
                             <AvatarFallback>
-                              {notification.authorName
+                              {notification.actorName
                                 ?.split(' ')
                                 .map((n) => n[0])
                                 .join('')}
@@ -204,7 +157,7 @@ export function Notifications() {
                         <p className="font-medium text-sm dark:text-white">
                           {notification.title}
                         </p>
-                        {!notification.read && (
+                        {!notification.isRead && (
                           <div className="h-2 w-2 rounded-full bg-green-600 shrink-0 mt-1" />
                         )}
                       </div>
@@ -212,7 +165,9 @@ export function Notifications() {
                         {notification.message}
                       </p>
                       <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-2">
-                        {notification.timestamp}
+                        {formatDistanceToNow(new Date(notification.createdAt), {
+                          addSuffix: true,
+                        })}
                       </p>
                     </div>
                   </div>
