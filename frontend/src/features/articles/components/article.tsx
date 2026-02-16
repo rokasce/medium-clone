@@ -14,12 +14,19 @@ import {
 import { toast } from 'sonner';
 import { HtmlRenderer } from './html-renderer';
 import { usePublishArticle, useClapArticle } from '../hooks';
+import { CommentsSection } from '@/features/comments';
+import { useComments } from '@/features/comments/hooks/use-comments';
 
 export function Article({ article }: { article: IArticle }) {
   const router = useRouter();
   const { mutate: publishArticle, isPending: isPublishing } =
     usePublishArticle();
   const { mutate: clapArticle } = useClapArticle();
+  const { data: comments } = useComments(article?.id ?? '');
+
+  const commentCount = comments
+    ? comments.reduce((acc, c) => acc + 1 + c.replies.length, 0)
+    : 0;
 
   const isDraft = article?.status === 'Draft';
 
@@ -122,7 +129,7 @@ export function Article({ article }: { article: IArticle }) {
             </Button>
             <Button variant="ghost" size="sm" className="gap-2">
               <MessageCircle className="h-4 w-4" />
-              12
+              {commentCount}
             </Button>
           </div>
 
@@ -193,6 +200,8 @@ export function Article({ article }: { article: IArticle }) {
           </div>
         </div>
       </article>
+
+      <CommentsSection articleId={article.id} />
     </div>
   );
 }

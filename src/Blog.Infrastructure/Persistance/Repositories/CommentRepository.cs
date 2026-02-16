@@ -1,4 +1,3 @@
-using System;
 using Blog.Application.Common.Interfaces;
 using Blog.Domain.Comments;
 using Blog.Domain.Comments.ValueObjects;
@@ -17,7 +16,8 @@ public sealed class CommentRepository : Repository<Comment>, ICommentRepository
         CancellationToken cancellationToken)
     {
         return await DbSet
-            .Include(c => c.Replies)
+            .Include(c => c.Author)
+                .ThenInclude(a => a.User)
             .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
     }
 
@@ -26,9 +26,12 @@ public sealed class CommentRepository : Repository<Comment>, ICommentRepository
         CancellationToken cancellationToken)
     {
         return await DbSet
-            .Where(c => c.ArticleId == articleId)
-            .Where(c => c.Status == CommentStatus.Active)
-            .OrderByDescending(c => c.CreatedAt)
+            .Include(c => c.Author)
+                .ThenInclude(a => a.User)
+            .Where(c => c.ArticleId == articleId
+                && c.ParentCommentId == null
+                && c.Status != CommentStatus.Deleted)
+            .OrderBy(c => c.CreatedAt)
             .ToListAsync(cancellationToken);
     }
 
@@ -37,8 +40,10 @@ public sealed class CommentRepository : Repository<Comment>, ICommentRepository
         CancellationToken cancellationToken)
     {
         return await DbSet
-            .Where(c => c.ParentCommentId == parentCommentId)
-            .Where(c => c.Status == CommentStatus.Active)
+            .Include(c => c.Author)
+                .ThenInclude(a => a.User)
+            .Where(c => c.ParentCommentId == parentCommentId
+                && c.Status != CommentStatus.Deleted)
             .OrderBy(c => c.CreatedAt)
             .ToListAsync(cancellationToken);
     }
@@ -48,8 +53,7 @@ public sealed class CommentRepository : Repository<Comment>, ICommentRepository
         CancellationToken cancellationToken)
     {
         return await DbSet
-            .Where(c => c.ArticleId == articleId)
-            .Where(c => c.Status == CommentStatus.Active)
+            .Where(c => c.ArticleId == articleId && c.Status != CommentStatus.Deleted)
             .CountAsync(cancellationToken);
     }
 }

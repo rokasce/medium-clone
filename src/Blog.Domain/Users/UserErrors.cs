@@ -15,4 +15,8 @@ public static class UserErrors
     public static Error AlreadyAuthor = Error.Failure(
         "User.AlreadyAuthor",
         "The user is already an author");
+
+    public static Error AuthorNotFound = Error.Failure(
+        "User.AuthorNotFound",
+        "The user does not have an author profile");
 }
