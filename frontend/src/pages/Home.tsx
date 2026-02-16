@@ -299,7 +299,7 @@ function ArticleCard({ article }: { article: ArticleSummary }) {
                 <span>·</span>
                 <span>{article.readingTimeMinutes} min read</span>
                 <span>·</span>
-                <span>{article.clapsCount} claps</span>
+                <span>{article.clapCount} claps</span>
               </div>
 
               <Button
