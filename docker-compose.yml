@@ -33,7 +33,7 @@ services:
     ports:
       - 18080:8080
     volumes:
-      - ../keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json:ro
+      - ./src/keycloak:/opt/keycloak/data/import:ro
       - keycloak_data:/opt/keycloak/data
 
   azurite:
