@@ -36,7 +36,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// HTTPS is terminated by Nginx — do not redirect here
+// app.UseHttpsRedirection();
 
 app.UseCustomExceptionHandler();
 
