@@ -1,0 +1,68 @@
+services:
+  blog-api:
+    image: ghcr.io/rokasce/blog-api:latest
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ConnectionStrings__Database=${DB_CONNECTION_STRING}
+      - Authentication__ValidIssuer=${KEYCLOAK_ISSUER}
+      - Authentication__MetadataUrl=${KEYCLOAK_METADATA_URL}
+      - Authentication__RequireHttpsMetadata=true
+      - Keycloak__BaseUrl=${KEYCLOAK_BASE_URL}
+      - Keycloak__AdminUrl=${KEYCLOAK_ADMIN_URL}
+      - Keycloak__TokenUrl=${KEYCLOAK_TOKEN_URL}
+      - Keycloak__AdminClientId=${KEYCLOAK_ADMIN_CLIENT_ID}
+      - Keycloak__AdminClientSecret=${KEYCLOAK_ADMIN_CLIENT_SECRET}
+      - Keycloak__AuthClientId=${KEYCLOAK_AUTH_CLIENT_ID}
+      - Keycloak__AuthClientSecret=${KEYCLOAK_AUTH_CLIENT_SECRET}
+      - AzureStorage__ConnectionString=${AZURE_STORAGE_CONNECTION_STRING}
+      - AzureStorage__BaseUrl=${AZURE_STORAGE_BASE_URL}
+      - AllowedOrigins=https://rcesnulevicius.lt,https://www.rcesnulevicius.lt
+    ports:
+      - "8080:8080"
+    depends_on:
+      - blog-db
+      - blog-idp
+    networks:
+      - blog-net
+
+  blog-db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: medium_clone
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - blog-net
+
+  blog-idp:
+    image: quay.io/keycloak/keycloak:26.0
+    restart: unless-stopped
+    command: start --import-realm
+    environment:
+      - KC_BOOTSTRAP_ADMIN_USERNAME=${KC_ADMIN_USER}
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=${KC_ADMIN_PASSWORD}
+      - KC_DB=postgres
+      - KC_DB_URL=jdbc:postgresql://blog-db:5432/keycloak
+      - KC_DB_USERNAME=${DB_USER}
+      - KC_DB_PASSWORD=${DB_PASSWORD}
+      - KC_HTTP_ENABLED=true
+      - KC_HOSTNAME_STRICT=false
+    volumes:
+      - ./keycloak:/opt/keycloak/data/import:ro
+      - keycloak_data:/opt/keycloak/data
+    depends_on:
+      - blog-db
+    networks:
+      - blog-net
+
+networks:
+  blog-net:
+
+volumes:
+  postgres_data:
+  keycloak_data:
