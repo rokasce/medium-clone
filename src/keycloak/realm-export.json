@@ -623,7 +623,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "UZDmbNxWmV4TlpaCRcju6pMRsyuV3er1",
+      "secret": "FimFcGkZTtjiqvVKw94dmvW1G5A0I2rB",
       "redirectUris": [
         "http://localhost:18080/*"
       ],
@@ -735,7 +735,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "3E3yvXaYppoYBF3Ir6DgtEzADKKzSurZ",
+      "secret": "6k6u3H5MqrHrN4t9HBgJHWxjULT6ci8N",
       "redirectUris": [],
       "webOrigins": [],
       "notBefore": 0,
