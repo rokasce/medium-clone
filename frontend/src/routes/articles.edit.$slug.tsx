@@ -1,6 +1,7 @@
 import { articleApi } from '@/features/articles/api/article-api';
 import EditPage from '@/features/articles/pages/edit-page';
 import { createFileRoute, useMatch } from '@tanstack/react-router';
+import { AuthGuard } from '@/features/auth/components/auth-guard';
 
 export const Route = createFileRoute('/articles/edit/$slug')({
   loader: async ({ params }) => await articleApi.previewBySlug(params.slug),
@@ -19,5 +20,9 @@ function RouteComponent() {
     );
   }
 
-  return <EditPage article={article} />;
+  return (
+    <AuthGuard>
+      <EditPage article={article} />
+    </AuthGuard>
+  );
 }
