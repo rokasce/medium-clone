@@ -1,4 +1,4 @@
-import { AxiosError, type InternalAxiosRequestConfig } from 'axios';
+import { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
 import { authApi } from './api/auth-api';
 import { BaseAPI } from '@/shared/lib/base-api';
 import type { ApiError } from '@/shared/types/api';

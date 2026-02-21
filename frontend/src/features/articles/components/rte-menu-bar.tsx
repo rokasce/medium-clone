@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Toggle } from '@/components/ui/toggle';
-import { Editor } from '@tiptap/react';
+import { type Editor } from '@tiptap/react';
 import {
   BoldIcon,
   ItalicIcon,

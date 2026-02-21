@@ -1,4 +1,4 @@
-import SearchPage from '@/pages/search';
+import SearchPage from '@/pages/search.tsx';
 import { createFileRoute } from '@tanstack/react-router';
 
 type SearchParams = {

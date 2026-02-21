@@ -6,6 +6,7 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import prettier from 'eslint-plugin-prettier';
 import prettierConfig from 'eslint-config-prettier';
+import importPlugin from 'eslint-plugin-import';
 import globals from 'globals';
 
 export default [
@@ -50,6 +51,7 @@ export default [
       'react-hooks': reactHooks,
       'jsx-a11y': jsxA11y,
       prettier: prettier,
+      import: importPlugin,
     },
     rules: {
       // Prettier integration - run Prettier as an ESLint rule
@@ -65,6 +67,13 @@ export default [
       ],
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
+      '@typescript-eslint/consistent-type-imports': [
+        'warn',
+        {
+          prefer: 'type-imports',
+          fixStyle: 'inline-type-imports',
+        },
+      ],
 
       // React rules
       'react/react-in-jsx-scope': 'off', // Not needed in React 17+
@@ -84,10 +93,25 @@ export default [
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       'no-debugger': 'warn',
       'no-unused-vars': 'off', // Using TypeScript version instead
+
+      // Import rules - enforce file extensions for cross-platform compatibility
+      // NOTE: Always include .tsx/.ts extensions when importing page components or
+      // non-barrel-export files to ensure Linux/CI compatibility
+      // Disabled for now to avoid 200+ warnings from barrel exports (index files)
+      // 'import/extensions': ['warn', 'always', { ignorePackages: true }],
     },
     settings: {
       react: {
         version: 'detect',
+      },
+      'import/resolver': {
+        typescript: {
+          alwaysTryTypes: true,
+          project: './tsconfig.json',
+        },
+        node: {
+          extensions: ['.js', '.jsx', '.ts', '.tsx'],
+        },
       },
     },
   },
