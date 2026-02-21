@@ -55,7 +55,9 @@ export function Header() {
           )}
         </div>
 
-        <nav className={`flex items-center gap-4 ${mobileSearchOpen ? 'hidden md:flex' : ''}`}>
+        <nav
+          className={`flex items-center gap-4 ${mobileSearchOpen ? 'hidden md:flex' : ''}`}
+        >
           <Button
             variant="ghost"
             size="icon"

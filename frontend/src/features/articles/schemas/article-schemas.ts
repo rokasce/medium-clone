@@ -13,7 +13,7 @@ export const createArticleSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters'),
   content: z.string().min(50, 'Content must be at least 50 characters'),
   subtitle: z.string().optional(),
-  tags: z.array(tagSchema).max(5, 'Maximum 5 tags allowed').default([]),
+  tags: z.array(tagSchema).max(5, 'Maximum 5 tags allowed'),
   featuredImageUrl: z.string().url('Must be a valid URL').optional().nullable(),
 });
 
@@ -24,7 +24,7 @@ export const updateArticleSchema = z.object({
     .min(50, 'Content must be at least 50 characters')
     .optional(),
   subtitle: z.string().optional(),
-  tags: z.array(tagSchema).max(5, 'Maximum 5 tags allowed').default([]),
+  tags: z.array(tagSchema).max(5, 'Maximum 5 tags allowed'),
   featuredImageUrl: z.string().url('Must be a valid URL').optional().nullable(),
 });
 

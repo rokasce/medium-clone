@@ -9,7 +9,11 @@ import {
 } from '@/shared/components/ui';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/features/auth/hooks';
-import { useComments, useAddComment, useDeleteComment } from '../hooks/use-comments';
+import {
+  useComments,
+  useAddComment,
+  useDeleteComment,
+} from '../hooks/use-comments';
 import type { Comment } from '../types/comment';
 import { toast } from 'sonner';
 
@@ -28,7 +32,8 @@ function CommentItem({
   onReply,
   isReply = false,
 }: CommentItemProps) {
-  const { mutate: deleteComment, isPending: isDeleting } = useDeleteComment(articleId);
+  const { mutate: deleteComment, isPending: isDeleting } =
+    useDeleteComment(articleId);
 
   const isOwner = currentUserId === comment.authorId;
 
@@ -58,7 +63,9 @@ function CommentItem({
             {comment.authorName}
           </span>
           <span className="text-xs text-zinc-500 dark:text-zinc-400">
-            {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
+            {formatDistanceToNow(new Date(comment.createdAt), {
+              addSuffix: true,
+            })}
           </span>
           {comment.status === 'Edited' && (
             <span className="text-xs text-zinc-400 italic">edited</span>
@@ -117,7 +124,11 @@ interface CommentInputProps {
   onCancelReply: () => void;
 }
 
-function CommentInput({ articleId, replyingTo, onCancelReply }: CommentInputProps) {
+function CommentInput({
+  articleId,
+  replyingTo,
+  onCancelReply,
+}: CommentInputProps) {
   const [content, setContent] = useState('');
   const { mutate: addComment, isPending } = useAddComment(articleId);
 
@@ -161,7 +172,9 @@ function CommentInput({ articleId, replyingTo, onCancelReply }: CommentInputProp
       <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        placeholder={replyingTo ? `Reply to ${replyingTo.authorName}…` : 'Write a comment…'}
+        placeholder={
+          replyingTo ? `Reply to ${replyingTo.authorName}…` : 'Write a comment…'
+        }
         rows={3}
         maxLength={1000}
         className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-transparent px-3 py-2 text-sm text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-green-500 resize-none"
@@ -206,7 +219,9 @@ export function CommentsSection({ articleId }: CommentsSectionProps) {
       <div className="flex items-center gap-2 mb-6">
         <MessageCircle className="h-5 w-5 text-zinc-600 dark:text-zinc-400" />
         <h2 className="text-lg font-semibold dark:text-white">
-          {totalCount > 0 ? `${totalCount} Response${totalCount !== 1 ? 's' : ''}` : 'Responses'}
+          {totalCount > 0
+            ? `${totalCount} Response${totalCount !== 1 ? 's' : ''}`
+            : 'Responses'}
         </h2>
       </div>
 

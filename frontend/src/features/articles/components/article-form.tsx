@@ -25,6 +25,7 @@ import {
   createArticleSchema,
   tagSchema,
   type CreateArticleInput,
+  type UpdateArticleInput,
 } from '../schemas/article-schemas';
 
 interface ArticleFormProps {
@@ -87,6 +88,7 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
       form.setValue('featuredImageUrl', response.url, { shouldValidate: true });
       toast.success('Image uploaded successfully');
     } catch (err) {
+      console.error('Failed to upload image:', err);
       toast.error('Failed to upload image');
     } finally {
       setIsUploadingImage(false);
@@ -111,7 +113,7 @@ const ArticleForm: React.FC<ArticleFormProps> = ({
 
     const result = tagSchema.safeParse(newTag);
     if (!result.success) {
-      setTagError(result.error.errors[0]?.message ?? 'Invalid tag');
+      setTagError(result.error?.message ?? 'Invalid tag');
       return;
     }
 
@@ -381,7 +383,7 @@ export const EditArticleForm: React.FC<EditArticleFormProps> = ({
   const { mutateAsync: updateArticle } = useUpdateArticle();
 
   const handleSubmit = async (data: CreateArticleInput) => {
-    await updateArticle({ id: article.id, data });
+    await updateArticle({ id: article.id, data: data as UpdateArticleInput });
     navigate({ to: `/articles/preview/${article.slug}` });
   };
 

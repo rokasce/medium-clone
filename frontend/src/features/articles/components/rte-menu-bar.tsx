@@ -23,11 +23,9 @@ interface MenuBarProps {
 }
 
 export const RichTextEditorMenuBar: React.FC<MenuBarProps> = ({ editor }) => {
-  if (!editor) {
-    return null;
-  }
-
   const setLink = useCallback(() => {
+    if (!editor) return;
+
     const previousUrl = editor.getAttributes('link').href;
     const url = window.prompt('URL', previousUrl);
 
@@ -42,6 +40,10 @@ export const RichTextEditorMenuBar: React.FC<MenuBarProps> = ({ editor }) => {
 
     editor.chain().focus().setLink({ href: url }).run();
   }, [editor]);
+
+  if (!editor) {
+    return null;
+  }
 
   return (
     <div className="flex flex-wrap gap-1 p-2 border-b border-input rounded-t-md">

@@ -122,7 +122,8 @@ export function Notifications() {
                   disabled={notification.isRead}
                   className={cn(
                     'w-full text-left p-4 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors',
-                    !notification.isRead && 'bg-green-50/50 dark:bg-green-950/30'
+                    !notification.isRead &&
+                      'bg-green-50/50 dark:bg-green-950/30'
                   )}
                 >
                   <div className="flex gap-3">

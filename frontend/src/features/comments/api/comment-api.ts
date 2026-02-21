@@ -8,7 +8,10 @@ export class CommentAPI extends BaseAPI {
     );
   }
 
-  async addComment(articleId: string, data: AddCommentRequest): Promise<string> {
+  async addComment(
+    articleId: string,
+    data: AddCommentRequest
+  ): Promise<string> {
     return this.handleRequest(() =>
       this.axiosInstance.post<string>(`/articles/${articleId}/comments`, data)
     );
@@ -16,7 +19,9 @@ export class CommentAPI extends BaseAPI {
 
   async deleteComment(articleId: string, commentId: string): Promise<void> {
     return this.handleRequest(() =>
-      this.axiosInstance.delete<void>(`/articles/${articleId}/comments/${commentId}`)
+      this.axiosInstance.delete<void>(
+        `/articles/${articleId}/comments/${commentId}`
+      )
     );
   }
 }

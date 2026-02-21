@@ -3,6 +3,7 @@ import { createFileRoute } from '@tanstack/react-router';
 
 type SearchParams = {
   q?: string;
+  page?: number;
 };
 
 export const Route = createFileRoute('/search')({
@@ -10,6 +11,12 @@ export const Route = createFileRoute('/search')({
   validateSearch: (search: Record<string, unknown>): SearchParams => {
     return {
       q: typeof search.q === 'string' ? search.q : undefined,
+      page:
+        typeof search.page === 'number'
+          ? search.page
+          : typeof search.page === 'string'
+            ? parseInt(search.page, 10) || 1
+            : 1,
     };
   },
 });

@@ -1,17 +1,17 @@
-import { useState, useEffect } from 'react';
-import { useSearch } from '@tanstack/react-router';
+import { useSearch, useNavigate } from '@tanstack/react-router';
 import { Link } from '@tanstack/react-router';
 import { Loader2, Bookmark, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/components/ui';
 import { useArticles } from '@/features/articles/hooks';
 import type { ArticleSummary } from '@/types';
 
 export default function SearchPage() {
-  const { q } = useSearch({ from: '/search' });
-  const [searchQuery, setSearchQuery] = useState(q ?? '');
-  const [currentPage, setCurrentPage] = useState(1);
+  const searchParams = useSearch({ from: '/search' });
+  const navigate = useNavigate({ from: '/search' });
+
+  const q = searchParams.q ?? '';
+  const currentPage = searchParams.page ?? 1;
 
   const { data, isLoading, isFetching } = useArticles({
     search: q || undefined,
@@ -22,10 +22,11 @@ export default function SearchPage() {
   const articles = data?.items ?? [];
   const totalPages = data?.totalPages ?? 1;
 
-  useEffect(() => {
-    setSearchQuery(q ?? '');
-    setCurrentPage(1);
-  }, [q]);
+  const handlePageChange = (newPage: number) => {
+    navigate({
+      search: { q, page: newPage },
+    });
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -73,7 +74,7 @@ export default function SearchPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1 || isFetching}
               >
                 Previous
@@ -85,7 +86,7 @@ export default function SearchPage() {
                 variant="outline"
                 size="sm"
                 onClick={() =>
-                  setCurrentPage((p) => Math.min(totalPages, p + 1))
+                  handlePageChange(Math.min(totalPages, currentPage + 1))
                 }
                 disabled={currentPage === totalPages || isFetching}
               >
