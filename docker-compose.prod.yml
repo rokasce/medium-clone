@@ -8,7 +8,7 @@ services:
       - ConnectionStrings__Database=${DB_CONNECTION_STRING}
       - Authentication__ValidIssuer=${KEYCLOAK_ISSUER}
       - Authentication__MetadataUrl=${KEYCLOAK_METADATA_URL}
-      - Authentication__RequireHttpsMetadata=true
+      - Authentication__RequireHttpsMetadata=false
       - Keycloak__BaseUrl=${KEYCLOAK_BASE_URL}
       - Keycloak__AdminUrl=${KEYCLOAK_ADMIN_URL}
       - Keycloak__TokenUrl=${KEYCLOAK_TOKEN_URL}
