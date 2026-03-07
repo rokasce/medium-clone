@@ -8,17 +8,13 @@ import {
 import { Button } from '@/shared/components/ui/button';
 import { Badge } from '@/shared/components/ui/badge';
 import { TrendingUp, Clock, Bookmark } from 'lucide-react';
-import {
-  useArticles,
-  useBookmarkArticle,
-  useRemoveBookmark,
-} from '@/features/articles';
+import { useArticles, useBookmarkArticle } from '@/features/articles';
 import { useQuery } from '@tanstack/react-query';
 import { tagApi } from '@/features/tags/api/tag-api';
 import { queryKeys } from '@/lib/query-keys';
 
 export default function Discover() {
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [_selectedCategory, _setSelectedCategory] = useState('All');
 
   // Fetch articles from backend
   const { data: articlesData, isLoading } = useArticles({
@@ -33,7 +29,6 @@ export default function Discover() {
   });
 
   const bookmarkMutation = useBookmarkArticle();
-  const removeBookmarkMutation = useRemoveBookmark();
 
   const articles = articlesData?.items || [];
   const popularTags = tagsData?.items || [];

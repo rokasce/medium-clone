@@ -1,7 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
 import { bookmarkApi } from '../api/bookmark-api';
-import { useToast } from '@/shared/components/ui/use-toast';
+import { toast } from 'sonner';
+import type { ApiError } from '@/shared/types/api';
 
 export function useBookmarks() {
   return useQuery({
@@ -12,7 +13,6 @@ export function useBookmarks() {
 
 export function useAddBookmark() {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   return useMutation({
     mutationFn: (articleId: string) => bookmarkApi.addBookmark(articleId),
@@ -20,26 +20,17 @@ export function useAddBookmark() {
       queryClient.invalidateQueries({
         queryKey: queryKeys.bookmarks.all,
       });
-      toast({
-        title: 'Bookmarked',
-        description: 'Article added to your bookmarks.',
-      });
+      toast.success('Article added to your bookmarks');
     },
-    onError: (error: any) => {
-      const message =
-        error.response?.data?.message || 'Failed to bookmark article';
-      toast({
-        title: 'Error',
-        description: message,
-        variant: 'destructive',
-      });
+    onError: (error: ApiError) => {
+      const message = error.message || 'Failed to bookmark article';
+      toast.error(message);
     },
   });
 }
 
 export function useRemoveBookmark() {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   return useMutation({
     mutationFn: (articleId: string) => bookmarkApi.removeBookmark(articleId),
@@ -47,19 +38,11 @@ export function useRemoveBookmark() {
       queryClient.invalidateQueries({
         queryKey: queryKeys.bookmarks.all,
       });
-      toast({
-        title: 'Removed',
-        description: 'Article removed from your bookmarks.',
-      });
+      toast.success('Article removed from your bookmarks');
     },
-    onError: (error: any) => {
-      const message =
-        error.response?.data?.message || 'Failed to remove bookmark';
-      toast({
-        title: 'Error',
-        description: message,
-        variant: 'destructive',
-      });
+    onError: (error: ApiError) => {
+      const message = error.message || 'Failed to remove bookmark';
+      toast.error(message);
     },
   });
 }
