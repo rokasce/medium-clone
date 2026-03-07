@@ -49,6 +49,7 @@ public static class DependencyInjection
         services.AddScoped<IArticleClapRepository, ArticleClapRepository>();
         services.AddScoped<IArticleRepository, ArticleRepository>();
         services.AddScoped<IAuthorRepository, AuthorRepository>();
+        services.AddScoped<IBookmarkRepository, BookmarkRepository>();
         services.AddScoped<ICommentRepository, CommentRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<ITagRepository, TagRepository>();

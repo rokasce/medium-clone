@@ -102,13 +102,13 @@ export function Header() {
                     <Link to="/profile">Profile</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/">Library</Link>
+                    <Link to="/bookmarks">Bookmarks</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/">Stories</Link>
+                    <Link to="/discover">Discover</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/">Stats</Link>
+                    <Link to="/profile">Stories</Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
