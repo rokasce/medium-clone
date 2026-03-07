@@ -55,7 +55,7 @@ public sealed class AdminAuthorizationDelegatingHandler : DelegatingHandler
 
         authorizationResponse.EnsureSuccessStatusCode();
 
-        return await authorizationResponse.Content.ReadFromJsonAsync<AuthorizationToken>() ??
+        return await authorizationResponse.Content.ReadFromJsonAsync<AuthorizationToken>(cancellationToken: cancellationToken) ??
                throw new ApplicationException();
     }
 }
