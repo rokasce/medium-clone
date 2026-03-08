@@ -76,28 +76,28 @@ export default function Discover() {
       {/* Secondary Navigation */}
       <div className="border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
         <div className="container mx-auto px-4">
-          <nav className="flex items-center gap-8 h-14">
+          <nav className="flex items-center gap-4 md:gap-8 h-14 overflow-x-auto">
             <Link
               to="/"
-              className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white"
+              className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white whitespace-nowrap"
             >
               Home
             </Link>
             <Link
               to="/discover"
-              className="text-sm font-medium border-b-2 border-green-600 dark:border-green-500 pb-4 pt-4"
+              className="text-sm font-medium border-b-2 border-green-600 dark:border-green-500 pb-4 pt-4 whitespace-nowrap"
             >
               Discover
             </Link>
             <Link
               to="/bookmarks"
-              className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white"
+              className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white whitespace-nowrap"
             >
               Bookmarks
             </Link>
             <Link
               to="/write"
-              className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white"
+              className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white whitespace-nowrap"
             >
               Write
             </Link>
@@ -105,14 +105,14 @@ export default function Discover() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-4 md:py-8">
         <div className="max-w-6xl mx-auto">
           {/* Page Header */}
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold mb-3 dark:text-white">
+          <div className="mb-6 md:mb-8">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 md:mb-3 dark:text-white">
               Discover Stories
             </h1>
-            <p className="text-lg text-zinc-600 dark:text-zinc-400">
+            <p className="text-base md:text-lg text-zinc-600 dark:text-zinc-400">
               Explore diverse perspectives and compelling narratives from
               writers worldwide.
             </p>
@@ -120,10 +120,10 @@ export default function Discover() {
 
           {/* Trending Topics */}
           {trendingTopics.length > 0 && (
-            <div className="mb-10">
-              <div className="flex items-center gap-2 mb-4">
-                <TrendingUp className="h-5 w-5 text-green-600 dark:text-green-500" />
-                <h2 className="text-xl font-bold dark:text-white">
+            <div className="mb-6 md:mb-10">
+              <div className="flex items-center gap-2 mb-3 md:mb-4">
+                <TrendingUp className="h-4 w-4 md:h-5 md:w-5 text-green-600 dark:text-green-500" />
+                <h2 className="text-lg md:text-xl font-bold dark:text-white">
                   Trending Topics
                 </h2>
               </div>
@@ -143,11 +143,11 @@ export default function Discover() {
 
           {/* Trending Articles Highlight */}
           {trendingArticles.length > 0 && (
-            <div className="mb-12">
-              <h2 className="text-2xl font-bold mb-6 dark:text-white">
+            <div className="mb-8 md:mb-12">
+              <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 dark:text-white">
                 Trending Now
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                 {trendingArticles.map((article) => (
                   <Link
                     key={article.id}
@@ -155,7 +155,7 @@ export default function Discover() {
                     params={{ slug: article.slug }}
                     className="group bg-white dark:bg-zinc-900 rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800 hover:shadow-lg transition-shadow"
                   >
-                    <div className="relative h-48 overflow-hidden">
+                    <div className="relative h-40 sm:h-48 overflow-hidden">
                       <img
                         src={
                           article.featuredImageUrl ||
@@ -164,25 +164,25 @@ export default function Discover() {
                         alt={article.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
-                      <div className="absolute top-3 right-3 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1">
+                      <div className="absolute top-2 right-2 md:top-3 md:right-3 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1">
                         <TrendingUp className="h-3 w-3 text-green-600 dark:text-green-500" />
                         <span className="text-xs font-medium text-zinc-900 dark:text-white">
                           {article.clapCount || 0}
                         </span>
                       </div>
                     </div>
-                    <div className="p-4">
-                      <h3 className="font-bold text-lg mb-2 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-500 transition-colors line-clamp-2">
+                    <div className="p-3 md:p-4">
+                      <h3 className="font-bold text-base md:text-lg mb-2 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-500 transition-colors line-clamp-2">
                         {article.title}
                       </h3>
-                      <div className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
-                        <Avatar className="h-5 w-5">
+                      <div className="flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-zinc-600 dark:text-zinc-400">
+                        <Avatar className="h-4 w-4 md:h-5 md:w-5">
                           <AvatarImage src={article.author.image} />
                           <AvatarFallback>
                             {article.author.username[0]}
                           </AvatarFallback>
                         </Avatar>
-                        <span>{article.author.username}</span>
+                        <span className="truncate">{article.author.username}</span>
                         <span>·</span>
                         <Clock className="h-3 w-3" />
                         <span>{article.readingTimeMinutes} min</span>
@@ -196,31 +196,46 @@ export default function Discover() {
 
           {/* All Articles */}
           <div>
-            <h2 className="text-2xl font-bold mb-6 dark:text-white">
+            <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 dark:text-white">
               All Stories
             </h2>
-            <div className="space-y-6">
+            <div className="space-y-4 md:space-y-6">
               {filteredArticles.map((article) => (
                 <div
                   key={article.id}
-                  className="flex gap-6 p-6 bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 hover:shadow-md transition-shadow"
+                  className="flex flex-col sm:flex-row gap-4 sm:gap-6 p-4 sm:p-6 bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 hover:shadow-md transition-shadow"
                 >
+                  {/* Thumbnail - Show first on mobile */}
+                  {article.featuredImageUrl && (
+                    <Link
+                      to="/articles/$slug"
+                      params={{ slug: article.slug }}
+                      className="shrink-0 order-1 sm:order-2"
+                    >
+                      <img
+                        src={article.featuredImageUrl}
+                        alt={article.title}
+                        className="w-full sm:w-36 md:w-48 h-48 sm:h-24 md:h-32 object-cover rounded"
+                      />
+                    </Link>
+                  )}
+
                   {/* Content */}
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Avatar className="h-6 w-6">
+                  <div className="flex-1 order-2 sm:order-1">
+                    <div className="flex items-center gap-1.5 md:gap-2 mb-2 md:mb-3 flex-wrap">
+                      <Avatar className="h-5 w-5 md:h-6 md:w-6">
                         <AvatarImage src={article.author.image} />
                         <AvatarFallback>
                           {article.author.username[0]}
                         </AvatarFallback>
                       </Avatar>
-                      <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                      <span className="text-xs md:text-sm font-medium text-zinc-700 dark:text-zinc-300">
                         {article.author.username}
                       </span>
                       <span className="text-zinc-400 dark:text-zinc-600">
                         ·
                       </span>
-                      <span className="text-sm text-zinc-600 dark:text-zinc-400">
+                      <span className="text-xs md:text-sm text-zinc-600 dark:text-zinc-400">
                         {article.publishedAt
                           ? new Date(article.publishedAt).toLocaleDateString()
                           : 'Draft'}
@@ -232,29 +247,29 @@ export default function Discover() {
                       params={{ slug: article.slug }}
                       className="group"
                     >
-                      <h3 className="text-2xl font-bold mb-2 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-500 transition-colors">
+                      <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-2 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-500 transition-colors">
                         {article.title}
                       </h3>
                       {article.subtitle && (
-                        <p className="text-zinc-600 dark:text-zinc-400 mb-4 line-clamp-2">
+                        <p className="text-sm md:text-base text-zinc-600 dark:text-zinc-400 mb-3 md:mb-4 line-clamp-2">
                           {article.subtitle}
                         </p>
                       )}
                     </Link>
 
-                    <div className="flex items-center gap-4 text-sm text-zinc-600 dark:text-zinc-400">
+                    <div className="flex items-center gap-3 md:gap-4 text-xs md:text-sm text-zinc-600 dark:text-zinc-400 flex-wrap">
                       <div className="flex items-center gap-1">
-                        <Clock className="h-4 w-4" />
+                        <Clock className="h-3 w-3 md:h-4 md:w-4" />
                         <span>{article.readingTimeMinutes} min read</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <TrendingUp className="h-4 w-4" />
+                        <TrendingUp className="h-3 w-3 md:h-4 md:w-4" />
                         <span>{article.clapCount || 0} claps</span>
                       </div>
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="ml-auto"
+                        className="ml-auto -mr-2 sm:mr-0"
                         onClick={(e) => handleBookmark(article.id, e)}
                         disabled={bookmarkMutation.isPending}
                       >
@@ -262,21 +277,6 @@ export default function Discover() {
                       </Button>
                     </div>
                   </div>
-
-                  {/* Thumbnail */}
-                  {article.featuredImageUrl && (
-                    <Link
-                      to="/articles/$slug"
-                      params={{ slug: article.slug }}
-                      className="shrink-0"
-                    >
-                      <img
-                        src={article.featuredImageUrl}
-                        alt={article.title}
-                        className="w-48 h-32 object-cover rounded"
-                      />
-                    </Link>
-                  )}
                 </div>
               ))}
             </div>

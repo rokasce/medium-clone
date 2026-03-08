@@ -97,28 +97,28 @@ export default function Home() {
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
       <div className="border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
         <div className="container mx-auto px-4">
-          <nav className="flex items-center gap-8 h-14">
+          <nav className="flex items-center gap-4 md:gap-8 h-14 overflow-x-auto">
             <Link
               to="/"
-              className="text-sm font-medium border-b-2 border-black dark:border-white pb-4 pt-4"
+              className="text-sm font-medium border-b-2 border-black dark:border-white pb-4 pt-4 whitespace-nowrap"
             >
               Home
             </Link>
             <Link
               to="/discover"
-              className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white"
+              className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white whitespace-nowrap"
             >
               Discover
             </Link>
             <Link
               to="/bookmarks"
-              className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white"
+              className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white whitespace-nowrap"
             >
               Bookmarks
             </Link>
             <Link
               to="/write"
-              className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white"
+              className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white whitespace-nowrap"
             >
               Write
             </Link>
@@ -126,12 +126,12 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-4 md:py-8">
         {isAuthenticated ? (
           // Logged In View
-          <div className="flex gap-8">
+          <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
             {/* Left Sidebar */}
-            <aside className="w-64 shrink-0">
+            <aside className="w-full lg:w-64 shrink-0">
               <h2 className="text-xl font-semibold mb-6 dark:text-white">
                 Welcome back, {userName}
               </h2>
@@ -235,17 +235,17 @@ export default function Home() {
 
             {/* Main Content */}
             <main className="flex-1">
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
-                  <h1 className="text-3xl font-bold mb-2 dark:text-white">
+                  <h1 className="text-2xl sm:text-3xl font-bold mb-2 dark:text-white">
                     Explore fresh ideas & new perspectives
                   </h1>
-                  <p className="text-zinc-600 dark:text-zinc-400">
+                  <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400">
                     Read stories from our community of writers and thinkers.
                   </p>
                 </div>
-                <Link to="/write">
-                  <Button className="bg-green-600 hover:bg-green-700">
+                <Link to="/write" className="self-start sm:self-auto">
+                  <Button className="bg-green-600 hover:bg-green-700 w-full sm:w-auto">
                     Write a story
                   </Button>
                 </Link>
@@ -256,34 +256,34 @@ export default function Home() {
                 <Link
                   to="/articles/$slug"
                   params={{ slug: featuredArticle.slug }}
-                  className="block mb-8 group"
+                  className="block mb-6 md:mb-8 group"
                 >
-                  <div className="relative h-96 rounded-lg overflow-hidden">
+                  <div className="relative h-64 sm:h-80 md:h-96 rounded-lg overflow-hidden">
                     <img
                       src={featuredArticle.imageUrl}
                       alt={featuredArticle.title}
                       className="w-full h-full object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/30 flex items-end">
-                      <div className="p-8 text-white">
-                        <h2 className="text-3xl font-bold mb-2 group-hover:underline">
+                      <div className="p-4 sm:p-6 md:p-8 text-white">
+                        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 group-hover:underline">
                           {featuredArticle.title}
                         </h2>
-                        <p className="text-zinc-200 mb-4">
+                        <p className="text-sm sm:text-base text-zinc-200 mb-3 md:mb-4 line-clamp-2">
                           {featuredArticle.excerpt}
                         </p>
-                        <div className="flex items-center gap-3">
-                          <Avatar className="h-8 w-8">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          <Avatar className="h-6 w-6 sm:h-8 sm:w-8">
                             <AvatarImage src={featuredArticle.author.avatar} />
                             <AvatarFallback>
                               {featuredArticle.author.name[0]}
                             </AvatarFallback>
                           </Avatar>
-                          <span className="text-sm">
+                          <span className="text-xs sm:text-sm">
                             {featuredArticle.author.name}
                           </span>
-                          <span className="text-sm text-zinc-300">·</span>
-                          <span className="text-sm text-zinc-300">
+                          <span className="text-xs sm:text-sm text-zinc-300">·</span>
+                          <span className="text-xs sm:text-sm text-zinc-300">
                             {featuredArticle.readTime} min read
                           </span>
                         </div>
@@ -296,10 +296,10 @@ export default function Home() {
               {/* Latest Stories */}
               {latestStories.length > 0 && (
                 <div>
-                  <h2 className="text-2xl font-bold mb-6 dark:text-white">
+                  <h2 className="text-xl sm:text-2xl font-bold mb-4 md:mb-6 dark:text-white">
                     Latest Stories
                   </h2>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                     {latestStories.map((story) => (
                       <Link
                         key={story.id}
@@ -357,9 +357,9 @@ export default function Home() {
           </div>
         ) : (
           // Logged Out View
-          <div className="flex gap-8">
+          <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
             {/* Left Section - Trending */}
-            <aside className="w-64 shrink-0">
+            <aside className="w-full lg:w-64 shrink-0 order-2 lg:order-1">
               {trendingArticles.length > 0 && (
                 <div className="mb-8">
                   <h3 className="text-sm font-semibold mb-4 dark:text-white">
@@ -425,17 +425,17 @@ export default function Home() {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1">
+            <main className="flex-1 order-1 lg:order-2">
               {/* Hero Section */}
-              <div className="text-center mb-12">
-                <h1 className="text-5xl font-bold mb-4 dark:text-white">
+              <div className="text-center mb-8 md:mb-12">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 md:mb-4 dark:text-white">
                   Explore fresh ideas & new perspectives
                 </h1>
-                <p className="text-xl text-zinc-600 dark:text-zinc-400 mb-6">
+                <p className="text-base sm:text-lg md:text-xl text-zinc-600 dark:text-zinc-400 mb-4 md:mb-6 px-4">
                   Read stories from our community of writers and thinkers.
                 </p>
                 <Link to="/signup">
-                  <Button className="bg-green-600 hover:bg-green-700 px-8 py-6 text-lg">
+                  <Button className="bg-green-600 hover:bg-green-700 px-6 py-4 sm:px-8 sm:py-6 text-base sm:text-lg">
                     Get started
                   </Button>
                 </Link>
@@ -446,34 +446,34 @@ export default function Home() {
                 <Link
                   to="/articles/$slug"
                   params={{ slug: featuredArticle.slug }}
-                  className="block mb-8 group"
+                  className="block mb-6 md:mb-8 group"
                 >
-                  <div className="relative h-96 rounded-lg overflow-hidden">
+                  <div className="relative h-64 sm:h-80 md:h-96 rounded-lg overflow-hidden">
                     <img
                       src={featuredArticle.imageUrl}
                       alt={featuredArticle.title}
                       className="w-full h-full object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/30 flex items-end">
-                      <div className="p-8 text-white">
-                        <h2 className="text-3xl font-bold mb-2 group-hover:underline">
+                      <div className="p-4 sm:p-6 md:p-8 text-white">
+                        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 group-hover:underline">
                           {featuredArticle.title}
                         </h2>
-                        <p className="text-zinc-200 mb-4">
+                        <p className="text-sm sm:text-base text-zinc-200 mb-3 md:mb-4 line-clamp-2">
                           {featuredArticle.excerpt}
                         </p>
-                        <div className="flex items-center gap-3">
-                          <Avatar className="h-8 w-8">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          <Avatar className="h-6 w-6 sm:h-8 sm:w-8">
                             <AvatarImage src={featuredArticle.author.avatar} />
                             <AvatarFallback>
                               {featuredArticle.author.name[0]}
                             </AvatarFallback>
                           </Avatar>
-                          <span className="text-sm">
+                          <span className="text-xs sm:text-sm">
                             {featuredArticle.author.name}
                           </span>
-                          <span className="text-sm text-zinc-300">·</span>
-                          <span className="text-sm text-zinc-300">
+                          <span className="text-xs sm:text-sm text-zinc-300">·</span>
+                          <span className="text-xs sm:text-sm text-zinc-300">
                             {featuredArticle.readTime} min read
                           </span>
                         </div>
@@ -486,10 +486,10 @@ export default function Home() {
               {/* Latest Stories */}
               {latestStories.length > 0 && (
                 <div>
-                  <h2 className="text-2xl font-bold mb-6 dark:text-white">
+                  <h2 className="text-xl sm:text-2xl font-bold mb-4 md:mb-6 dark:text-white">
                     Latest Stories
                   </h2>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                     {latestStories.map((story) => (
                       <Link
                         key={story.id}
