@@ -12,12 +12,19 @@ EXPOSE 5001
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+
+# Copy only project files first (better layer caching - changes less frequently)
 COPY ["src/Blog.API/Blog.API.csproj", "src/Blog.API/"]
 COPY ["src/Blog.Application/Blog.Application.csproj", "src/Blog.Application/"]
 COPY ["src/Blog.Domain/Blog.Domain.csproj", "src/Blog.Domain/"]
 COPY ["src/Blog.Infrastructure/Blog.Infrastructure.csproj", "src/Blog.Infrastructure/"]
+
+# Restore dependencies (cached until .csproj files change)
 RUN dotnet restore "./src/Blog.API/Blog.API.csproj"
+
+# Now copy source code (changes more frequently)
 COPY . .
+
 WORKDIR "/src/src/Blog.API"
 RUN dotnet build "./Blog.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
